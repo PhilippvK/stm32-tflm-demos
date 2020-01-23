@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/croutine.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/list.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/queue.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/tasks.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/timers.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/freertos.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/main.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/stm32f4xx_hal_msp.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/stm32f4xx_it.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/syscalls.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/Src/system_stm32f4xx.c.o"
+  "CMakeFiles/STM32F40G_Display.elf.dir/startup_stm32f407xx.s.o"
+  "STM32F40G_Display.elf"
+  "STM32F40G_Display.elf.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang ASM C)
+  include(CMakeFiles/STM32F40G_Display.elf.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
