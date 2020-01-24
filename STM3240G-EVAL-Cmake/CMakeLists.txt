@@ -10,7 +10,8 @@ ENABLE_LANGUAGE(ASM)
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
-set(STM32_CHIP STM32F457IG)
+set(STM32_CHIP STM32F407IGH6)
+set(STM_BOARD STM324xG_EVAL)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
@@ -27,21 +28,28 @@ endif()
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
-# SET(FREERTOS_HEAP_IMPL 1)
+SET(FREERTOS_HEAP_IMPL 1)
+FIND_PACKAGE(FreeRTOS REQUIRED)
 # SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g3")
-#
-FIND_PACKAGE(CMSIS required)
-FIND_PACKAGE
-# FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
-# FIND_PACKAGE(STM32Discovery COMPONENTS ioe lcd sdram REQUIRED)
-# FIND_PACKAGE(uGFX COMPONENTS gdisp_mcufont gdriver gdisp gos REQUIRED)
+SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
+
+FIND_PACKAGE(CMSIS REQUIRED)
+FIND_PACKAGE(STM32HAL REQUIRED)
+FIND_PACKAGE(STM32LL COMPONENTS fsmc REQUIRED)
+FIND_PACKAGE(STM32BSP COMPONENTS sram ts io lcd ili9325 stmpe811 REQUIRED)
 
 INCLUDE_DIRECTORIES(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    "${PROJECT_SOURCE_DIR}/Inc"
     "${PROJECT_SOURCE_DIR}/Drivers/STM32F4xx_HAL_Driver/Inc"
     "${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include"
     "${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS"
     "${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"
+    ${STM32HAL_INCLUDE_DIR}
     ${STM32LL_INCLUDE_DIR}
+    ${CMSIS_INCLUDE_DIRS}
+    ${FreeRTOS_INCLUDE_DIRS}
+    ${STM32BSP_INCLUDE_DIR}
     )
 
 file(GLOB PROJECT_SOURCES
@@ -55,21 +63,27 @@ file(GLOB PROJECT_SOURCES
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
+MESSAGE("BSP Sources: ${STM32BSP_SOURCES}")
+
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
+    ${STM32HAL_SOURCES}
+    ${CMSIS_SOURCES}
+    ${STM32BSP_SOURCES}
     ${STM32LL_SOURCES}
-    startup_stm32f407xx.s
+    ${FreeRTOS_SOURCES}
+    # startup_stm32f407xx.s
     )
 
-# ADD_CUSTOM_TARGET(
-#     flash
-#     COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin # TODO
-#     COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x8000000
-#     )
-#
-# ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
-#
+ADD_CUSTOM_TARGET(
+    flash
+    COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin # TODO
+    COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x8000000
+    )
+
+ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
+
 # if(${DISCOVERY_BOARD_DISC1})
 #     set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
 # else()
@@ -85,8 +99,8 @@ ADD_EXECUTABLE(
 #
 # ADD_DEPENDENCIES(debug flash)
 #
-# STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
-# STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
-# STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 
 # TODO: also clean .bin file on `make clean`
