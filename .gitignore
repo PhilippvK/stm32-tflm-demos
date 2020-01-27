@@ -1,4 +1,5 @@
 RemoteSystemsTempFiles/
+build
 .metadata
 bin/
 tmp/
