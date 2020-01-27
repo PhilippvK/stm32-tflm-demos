@@ -17,6 +17,7 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
 
 FIND_PACKAGE(Git REQUIRED)
+
 set(CUBE_SOURCE "${CMAKE_BINARY_DIR}/STM32F4-Cube-Firmware")
 if(EXISTS ${CUBE_SOURCE})
     message("Cube FW directory exists")
@@ -28,15 +29,39 @@ endif()
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
+set(UTENSOR_DIRECTORY "uTensor")
+set(UTENSOR_SOURCE "${CMAKE_BINARY_DIR}/${UTENSOR_DIRECTORY}")
+if(EXISTS ${UTENSOR_SOURCE})
+    message("uTensor source directory exists")
+else()
+    message("Getting uTensor Firmware")
+    set(GIT_REPOSITORY "https://github.com/alxhoff/uTensor.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${UTENSOR_DIRECTORY})
+endif()
+
+set(uTensor_DIR ${UTENSOR_SOURCE})
+
+set(MBED_DIRECTORY "mbed-os")
+set(MBED_SOURCE "${CMAKE_BINARY_DIR}/${MBED_DIRECTORY}")
+if(EXISTS ${MBED_SOURCE})
+    message("Mbed source directory exists")
+else()
+    message("Getting Mbed source")
+    set(GIT_REPOSITORY "https://github.com/ARMmbed/mbed-os.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${MBED_DIRECTORY})
+endif()
+
+set(mbed_DIR ${MBED_SOURCE})
+
 SET(FREERTOS_HEAP_IMPL 1)
 FIND_PACKAGE(FreeRTOS REQUIRED)
-# SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g3")
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
 
 FIND_PACKAGE(CMSIS REQUIRED)
 FIND_PACKAGE(STM32HAL REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS fsmc REQUIRED)
 FIND_PACKAGE(STM32BSP COMPONENTS sram ts io lcd ili9325 stmpe811 REQUIRED)
+FIND_PACKAGE(uTensor)
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -50,15 +75,11 @@ INCLUDE_DIRECTORIES(
     ${CMSIS_INCLUDE_DIRS}
     ${FreeRTOS_INCLUDE_DIRS}
     ${STM32BSP_INCLUDE_DIR}
+    ${uTensor_INCLUDE_DIRS}
     )
 
 file(GLOB PROJECT_SOURCES
     "Src/*.c"
-    "Middlewares/Third_Party/FreeRTOS/portable/MemMang/*.c"
-    "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/*.c"
-    "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/*.c"
-    "Middlewares/Third_Party/FreeRTOS/Source/*.c"
-    "Drivers/STM32F4xx_HAL_Driver/Src/*.c"
     )
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
@@ -73,7 +94,7 @@ ADD_EXECUTABLE(
     ${STM32BSP_SOURCES}
     ${STM32LL_SOURCES}
     ${FreeRTOS_SOURCES}
-    # startup_stm32f407xx.s
+    # ${uTensor_SOURCES}
     )
 
 ADD_CUSTOM_TARGET(
