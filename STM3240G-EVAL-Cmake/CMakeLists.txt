@@ -84,21 +84,17 @@ ADD_CUSTOM_TARGET(
 
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
 
-# if(${DISCOVERY_BOARD_DISC1})
-#     set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
-# else()
-#     set(OPENOCD_BOARD "board/stm32f429discovery.cfg")
-# endif()
-#
-# ADD_CUSTOM_TARGET(
-#     debug
-#     COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
-#     COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=GDBCommands
-#     COMMAND killall -15 openocd
-#     )
-#
-# ADD_DEPENDENCIES(debug flash)
-#
+set(OPENOCD_BOARD "${PROJECT_SOURCE_DIR}/stm32f40g_eval.cfg")
+
+ADD_CUSTOM_TARGET(
+    debug
+    COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=GDBCommands
+    COMMAND killall -15 openocd
+    )
+
+ADD_DEPENDENCIES(debug flash)
+
 STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
 STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
