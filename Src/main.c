@@ -62,6 +62,10 @@ void blink(void const *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+FATFS SDFatFs;   /* File system object for SD card logical drive */
+FIL MyFile;      /* File object */
+char SDPath[4];  /* SD card logical drive path */
+static uint8_t buffer[_MAX_SS]; /* a work buffer for the f_mkfs() */
 
 /* USER CODE END 0 */
 
@@ -98,6 +102,21 @@ int main(void)
 	BSP_LCD_SetFont(&Font8);
 	BSP_LCD_DisplayStringAt(210, (BSP_LCD_GetYSize() - 55),
 				(uint8_t *)hello_str, LEFT_MODE);
+
+	/*Link the SD Card disk I/O driver ###################################*/
+	if (FATFS_LinkDriver(&SD_Driver, SDPath) != 0) {
+		/* FatFs Initialization Error */
+		Error_Handler();
+	}
+
+	/* Create a FAT file system (format) on the logical drive */
+	f_mkfs((TCHAR const *)SDPath, FM_ANY, 0, buffer, sizeof(buffer));
+
+	/*##-4- Register the file system object to the FatFs module ################*/
+	if (f_mount(&SDFatFs, (TCHAR const *)SDPath, 0) != FR_OK) {
+		/* FatFs Initialization Error */
+		Error_Handler();
+	}
 	/* USER CODE END Init */
 
 	/* Configure the system clock */

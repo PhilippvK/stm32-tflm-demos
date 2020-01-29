@@ -38,6 +38,9 @@ extern "C" {
 #include "stm324xg_eval_sram.h"
 #include <stdlib.h>
 #include <stdio.h>
+/* FatFs includes component */
+#include "ff_gen_drv.h"
+#include "sd_diskio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
