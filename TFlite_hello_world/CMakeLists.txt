@@ -1,4 +1,4 @@
-PROJECT(STM32F40G_EVAL)
+PROJECT(STM32F40G_EVAL LANGUAGES C CXX)
 
 set(CMAKE_BUILD_TYPE Debug)
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
@@ -30,40 +30,30 @@ endif()
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
-set(UTENSOR_DIRECTORY "uTensor")
-set(UTENSOR_SOURCE "${CMAKE_BINARY_DIR}/${UTENSOR_DIRECTORY}")
-if(EXISTS ${UTENSOR_SOURCE})
-    message("uTensor source directory exists")
+set(TFLITE_SOURCE "${CMAKE_BINARY_DIR}/tensorflow")
+if(EXISTS ${TFLITE_SOURCE})
+    message("TensorFlow sources directory exists")
 else()
-    message("Getting uTensor Firmware")
-    set(GIT_REPOSITORY "https://github.com/alxhoff/uTensor.git")
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${UTENSOR_DIRECTORY})
+    message("Getting TensorFlow sources")
+    set(GIT_REPOSITORY "https://github.com/tensorflow/tensorflow.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
 endif()
 
-set(uTensor_DIR ${UTENSOR_SOURCE})
+SET(TF_DIR "${TFLITE_SOURCE}")
+SET(TFLITE_PLATFORM micro)
 
-set(MBED_DIRECTORY "mbed-os")
-set(MBED_SOURCE "${CMAKE_BINARY_DIR}/${MBED_DIRECTORY}")
-if(EXISTS ${MBED_SOURCE})
-    message("Mbed source directory exists")
-else()
-    message("Getting Mbed source")
-    set(GIT_REPOSITORY "https://github.com/ARMmbed/mbed-os.git")
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${MBED_DIRECTORY})
-endif()
-
-set(mbed_DIR ${MBED_SOURCE})
+set(STM32Cube_DIR ${CUBE_SOURCE})
 
 SET(FREERTOS_HEAP_IMPL 1)
 
 FIND_PACKAGE(FreeRTOS REQUIRED)
-# LIST(APPEND STORAGE_DRIVER "SDCARD")
 SET(STORAGE_DRIVER "SDCARD")
 FIND_PACKAGE(FATFS REQUIRED)
-FIND_PACKAGE(CMSIS REQUIRED)
+FIND_PACKAGE(CMSIS COMPONENTS NN REQUIRED)
 FIND_PACKAGE(STM32HAL REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS fsmc sdmmc REQUIRED)
 FIND_PACKAGE(STM32BSP COMPONENTS sd sram ts io lcd ili9325 stmpe811 REQUIRED)
+FIND_PACKAGE(TensorFlowLite REQUIRED)
 # FIND_PACKAGE(uTensor)
 
 INCLUDE_DIRECTORIES(
@@ -75,11 +65,13 @@ INCLUDE_DIRECTORIES(
     ${FreeRTOS_INCLUDE_DIRS}
     ${STM32BSP_INCLUDE_DIR}
     ${FATFS_INCLUDE_DIRS}
+    ${TensorFlowLite_INCLUDE_DIRS}
     # ${uTensor_INCLUDE_DIRS}
     )
 
 file(GLOB PROJECT_SOURCES
     "Src/*.c"
+    "Src/*.cc"
     )
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
@@ -93,6 +85,7 @@ ADD_EXECUTABLE(
     ${STM32LL_SOURCES}
     ${FATFS_SOURCES}
     ${FreeRTOS_SOURCES}
+    ${TensorFlowLite_SOURCES}
     # ${uTensor_SOURCES}
     )
 

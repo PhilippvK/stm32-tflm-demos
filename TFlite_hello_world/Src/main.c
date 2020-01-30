@@ -24,6 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "main_functions.h"
 #include "color.h"
 /* USER CODE END Includes */
 
@@ -610,8 +611,10 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void const *argument)
 {
 	/* USER CODE BEGIN 5 */
+    setup();
 	/* Infinite loop */
 	for (;;) {
+        loop();
 		osDelay(1);
 	}
 	/* USER CODE END 5 */
