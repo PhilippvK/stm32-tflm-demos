@@ -119,7 +119,7 @@ circle_t * loop()
 
 	// Increment the inference_counter, and reset it if we have reached
 	// the total number per cycle
-	inference_count += 1;
+	inference_count++;
 	if (inference_count >= kInferencesPerCycle)
 		inference_count = 0;
 

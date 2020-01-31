@@ -1,4 +1,5 @@
 RemoteSystemsTempFiles/
+.clangd
 build
 .metadata
 bin/
