@@ -24,7 +24,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "data_types.h"
 #include "main_functions.h"
+#include "constants.h"
 #include "color.h"
 /* USER CODE END Includes */
 
@@ -63,9 +65,9 @@ void blink(void const *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-FATFS SDFatFs;   /* File system object for SD card logical drive */
-FIL MyFile;      /* File object */
-char SDPath[4];  /* SD card logical drive path */
+FATFS SDFatFs; /* File system object for SD card logical drive */
+FIL MyFile; /* File object */
+char SDPath[4]; /* SD card logical drive path */
 static uint8_t buffer[_MAX_SS]; /* a work buffer for the f_mkfs() */
 
 /* USER CODE END 0 */
@@ -95,8 +97,8 @@ int main(void)
 	/* Clear the LCD Background layer */
 	BSP_LCD_Clear(LCD_COLOR_WHITE);
 
-	Touchscreen_Calibration();
-	BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+	/** Touchscreen_Calibration(); */
+	/** BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize()); */
 
 	BSP_LCD_Clear(LCD_COLOR_WHITE);
 	BSP_LCD_SetTextColor(LCD_COLOR_DARKRED);
@@ -105,19 +107,17 @@ int main(void)
 				(uint8_t *)hello_str, LEFT_MODE);
 
 	/*Link the SD Card disk I/O driver ###################################*/
-	if (FATFS_LinkDriver(&SD_Driver, SDPath) != 0) {
-		/* FatFs Initialization Error */
-		Error_Handler();
-	}
+	/** if (FATFS_LinkDriver(&SD_Driver, SDPath) != 0) { */
+	/**     Error_Handler(); */
+	/** } */
 
 	/* Create a FAT file system (format) on the logical drive */
-	f_mkfs((TCHAR const *)SDPath, FM_ANY, 0, buffer, sizeof(buffer));
+	/** f_mkfs((TCHAR const *)SDPath, FM_ANY, 0, buffer, sizeof(buffer)); */
 
 	/*##-4- Register the file system object to the FatFs module ################*/
-	if (f_mount(&SDFatFs, (TCHAR const *)SDPath, 0) != FR_OK) {
-		/* FatFs Initialization Error */
-		Error_Handler();
-	}
+	/** if (f_mount(&SDFatFs, (TCHAR const *)SDPath, 0) != FR_OK) { */
+	/**     Error_Handler(); */
+	/** } */
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -151,7 +151,7 @@ int main(void)
 
 	/* Create the thread(s) */
 	/* definition and creation of defaultTask */
-	osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+	osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1280);
 	defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
 	/* definition and creation of blinkTaskHandle */
@@ -611,11 +611,25 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void const *argument)
 {
 	/* USER CODE BEGIN 5 */
-    setup();
+	circle_t *tmp_circle;
+	int count = 0;
+    uint16_t screen_height = BSP_LCD_GetYSize();
+    uint16_t screen_width = BSP_LCD_GetXSize();
+    uint16_t x_pos, y_pos;
+	setup();
 	/* Infinite loop */
 	for (;;) {
-        loop();
-		osDelay(100);
+		tmp_circle = loop();
+		if (tmp_circle){
+            x_pos = (uint16_t)(tmp_circle->x * screen_width / (2 * PI));
+            y_pos = (uint16_t)((screen_height / 2) + tmp_circle->y * screen_height / 2);
+			BSP_LCD_FillCircle(x_pos, y_pos, tmp_circle->size);
+        }
+		count++;
+		if (count == 40)
+			vTaskSuspend(NULL);
+		else
+			osDelay(100);
 	}
 	/* USER CODE END 5 */
 }

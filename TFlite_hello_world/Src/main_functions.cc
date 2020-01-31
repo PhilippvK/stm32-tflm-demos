@@ -20,8 +20,9 @@ limitations under the License.
 
 #include "main_functions.h"
 
+#include "data_types.h"
+
 #include "constants.h"
-#include "output_handler.h"
 #include "sine_model_data.h"
 // Globals, used for compatibility with Arduino-style sketches.
 namespace
@@ -86,8 +87,11 @@ void setup()
 }
 
 // The name of this function is important for Arduino compatibility.
-void loop()
+circle_t * loop()
 {
+    circle_t *ret = (circle_t*)malloc(sizeof(circle_t));
+    if(!ret) return NULL;
+    ret->size = 4;
 	// Calculate an x value to feed into the model. We compare the current
 	// inference_count to the number of inferences per cycle to determine
 	// our position within the range of possible x values the model was
@@ -100,23 +104,24 @@ void loop()
 	input->data.f[0] = x_val;
 
 	// Run inference, and report any error
-	TfLiteStatus invoke_status = interpreter->Invoke();
+	static volatile TfLiteStatus invoke_status = interpreter->Invoke();
 	if (invoke_status != kTfLiteOk) {
 		error_reporter->Report("Invoke failed on x_val: %f\n",
 				       static_cast<double>(x_val));
-		return;
+		return NULL;
 	}
 
 	// Read the predicted y value from the model's output tensor
 	float y_val = output->data.f[0];
 
-	// Output the results. A custom HandleOutput function can be implemented
-	// for each supported hardware target.
-	HandleOutput(error_reporter, x_val, y_val);
+    ret->x=x_val;
+    ret->y=y_val;
 
 	// Increment the inference_counter, and reset it if we have reached
 	// the total number per cycle
 	inference_count += 1;
 	if (inference_count >= kInferencesPerCycle)
 		inference_count = 0;
+
+    return ret;
 }
