@@ -129,26 +129,26 @@ IF(TFLITE_PLATFORM STREQUAL "micro")
 
     SET(TFLITE_KERNEL_SOURCES
         micro/kernels/activations.cc
-        micro/kernels/add.cc
+        # micro/kernels/add.cc
         micro/kernels/all_ops_resolver.cc
         micro/kernels/arg_min_max.cc
         micro/kernels/ceil.cc
         micro/kernels/comparisons.cc
         micro/kernels/concatenation.cc
-        micro/kernels/conv.cc
-        micro/kernels/depthwise_conv.cc
+        # micro/kernels/conv.cc
+        # micro/kernels/depthwise_conv.cc
         micro/kernels/dequantize.cc
         micro/kernels/elementwise.cc
         micro/kernels/floor.cc
-        micro/kernels/fully_connected.cc
+        # micro/kernels/fully_connected.cc
         micro/kernels/logical.cc
         micro/kernels/logistic.cc
         micro/kernels/maximum_minimum.cc
-        micro/kernels/mul.cc
+        # micro/kernels/mul.cc
         micro/kernels/neg.cc
         micro/kernels/pack.cc
         micro/kernels/pad.cc
-        micro/kernels/pooling.cc
+        # micro/kernels/pooling.cc
         micro/kernels/prelu.cc
         micro/kernels/quantize.cc
         micro/kernels/reshape.cc
@@ -157,6 +157,7 @@ IF(TFLITE_PLATFORM STREQUAL "micro")
         micro/kernels/split.cc
         micro/kernels/strided_slice.cc
         micro/kernels/svdf.cc
+        micro/kernels/unpack.cc
         micro/kernels/cmsis-nn/add.cc
         micro/kernels/cmsis-nn/conv.cc
         micro/kernels/cmsis-nn/depthwise_conv.cc
@@ -165,6 +166,7 @@ IF(TFLITE_PLATFORM STREQUAL "micro")
         micro/kernels/cmsis-nn/pooling.cc
         micro/kernels/cmsis-nn/scratch_buffer.cc
         kernels/kernel_util.cc
+        kernels/internal/quantization_util.cc
         )
 ELSE()
     #TODO when are these used?
