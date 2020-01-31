@@ -106,7 +106,7 @@ ADD_CUSTOM_TARGET(
 
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
 
-set(OPENOCD_BOARD "${PROJECT_SOURCE_DIR}/stm32f40g_eval.cfg")
+set(OPENOCD_BOARD "board/stm3241g_eval_stlink.cfg")
 
 ADD_CUSTOM_TARGET(
     debug
