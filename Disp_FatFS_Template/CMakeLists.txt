@@ -111,7 +111,7 @@ set(OPENOCD_BOARD "${PROJECT_SOURCE_DIR}/stm32f40g_eval.cfg")
 ADD_CUSTOM_TARGET(
     debug
     COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
-    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=GDBCommands
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CURRENT_LIST_DIR}/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
     COMMAND killall -15 openocd
     )
 
