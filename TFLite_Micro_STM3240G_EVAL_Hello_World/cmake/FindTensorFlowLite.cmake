@@ -100,8 +100,6 @@ SET(TFLITE_CORE_HEADERS
     )
 
 SET(TFLITE_CORE_SOURCES
-    tensorflow/lite/kernels/kernel_util.cc
-    tensorflow/lite/kernels/internal/quantization_util.cc
     tensorflow/lite/core/api/error_reporter.cc
     tensorflow/lite/core/api/flatbuffer_conversions.cc
     tensorflow/lite/core/api/op_resolver.cc
@@ -113,7 +111,6 @@ SET(TFLITE_C_HEADERS
     )
 
 SET(TFLITE_C_SOURCES
-    tensorflow/lite/c/builtin_op_data.h
     tensorflow/lite/c/common.c
     )
 
@@ -149,7 +146,6 @@ ELSE()
             )
         
         SET(TFLITE_PLATFORM_SOURCES
-            tensorflow/lite/micro/
             tensorflow/lite/micro/debug_log.cc
             tensorflow/lite/micro/debug_log_numbers.cc
             tensorflow/lite/micro/memory_helpers.cc
@@ -203,13 +199,6 @@ ELSE()
             tensorflow/lite/micro/kernels/strided_slice.cc
             tensorflow/lite/micro/kernels/svdf.cc
             tensorflow/lite/micro/kernels/unpack.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/add.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/conv.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/depthwise_conv.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/fully_connected.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/mul.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/pooling.cc
-            # tensorflow/lite/micro/kernels/cmsis-nn/scratch_buffer.cc
             )
     ELSE()
         #TODO when are these used?
