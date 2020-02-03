@@ -1,0 +1,114 @@
+PROJECT(STM32F40G_EVAL LANGUAGES C CXX)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
+CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
+ENABLE_LANGUAGE(ASM)
+
+# Remove -rdynamic option from linking that is not supported by arm-none-eabi
+# Also remove "undefined reference to `_sbrk'" error
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
+
+set(STM32_CHIP STM32F429ZIT)
+set(STM_BOARD STM32F429I-Discovery)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
+include(${CMAKE_TOOLCHAIN_FILE})
+
+FIND_PACKAGE(Git REQUIRED)
+
+set(CUBE_SOURCE "${CMAKE_BINARY_DIR}/STM32F4-Cube-Firmware")
+if(EXISTS ${CUBE_SOURCE})
+    message("Cube FW directory exists")
+else()
+    message("Getting Cube Firmware")
+    set(GIT_REPOSITORY "https://github.com/alxhoff/STM32F4-Cube-Firmware.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
+endif()
+
+set(STM32Cube_DIR ${CUBE_SOURCE})
+
+set(TFLITE_SOURCE "${CMAKE_BINARY_DIR}/tensorflow")
+if(EXISTS ${TFLITE_SOURCE})
+    message("TensorFlow sources directory exists")
+else()
+    message("Getting TensorFlow sources")
+    set(GIT_REPOSITORY "https://github.com/tensorflow/tensorflow.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
+endif()
+
+SET(TF_DIR "${TFLITE_SOURCE}")
+SET(TFLITE_PLATFORM micro)
+
+set(STM32Cube_DIR ${CUBE_SOURCE})
+
+SET(FREERTOS_HEAP_IMPL 1)
+
+SET(STORAGE_DRIVER "SDCARD")
+FIND_PACKAGE(FATFS REQUIRED)
+FIND_PACKAGE(CMSIS COMPONENTS NN REQUIRED)
+FIND_PACKAGE(STM32HAL REQUIRED)
+FIND_PACKAGE(STM32LL COMPONENTS fmc REQUIRED)
+FIND_PACKAGE(STM32BSP COMPONENTS ili9341 ts lcd sdram REQUIRED)
+FIND_PACKAGE(TensorFlowLite REQUIRED)
+
+INCLUDE_DIRECTORIES(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    "${PROJECT_SOURCE_DIR}/Inc"
+    ${STM32HAL_INCLUDE_DIR}
+    ${STM32LL_INCLUDE_DIR}
+    ${CMSIS_INCLUDE_DIRS}
+    ${FreeRTOS_INCLUDE_DIRS}
+    ${STM32BSP_INCLUDE_DIR}
+    ${FATFS_INCLUDE_DIRS}
+    ${TensorFlowLite_INCLUDE_DIRS}
+    )
+
+file(GLOB PROJECT_SOURCES
+    "Src/*.c"
+    "Src/*.cc"
+    )
+
+SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
+
+ADD_EXECUTABLE(
+    ${CMAKE_PROJECT_NAME}.elf
+    ${PROJECT_SOURCES}
+    ${STM32HAL_SOURCES}
+    ${CMSIS_SOURCES}
+    ${STM32BSP_SOURCES}
+    ${STM32LL_SOURCES}
+    ${FATFS_SOURCES}
+    ${FreeRTOS_SOURCES}
+    ${TensorFlowLite_SOURCES}
+    )
+
+TARGET_COMPILE_DEFINITIONS(${CMAKE_PROJECT_NAME}.elf PUBLIC STM_BSP)
+
+ADD_CUSTOM_TARGET(
+    flash
+    COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin # TODO
+    COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x8000000
+    )
+
+ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
+
+set(OPENOCD_BOARD "board/stm3241g_eval_stlink.cfg")
+
+
+ADD_CUSTOM_TARGET(
+    debug
+    COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CURRENT_LIST_DIR}/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
+    COMMAND killall -15 openocd
+    )
+
+ADD_DEPENDENCIES(debug flash)
+
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+
+# TODO: also clean .bin file on `make clean`
