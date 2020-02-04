@@ -104,7 +104,7 @@ circle_t * loop()
 	input->data.f[0] = x_val;
 
 	// Run inference, and report any error
-	static volatile TfLiteStatus invoke_status = interpreter->Invoke();
+	TfLiteStatus invoke_status = interpreter->Invoke();
 	if (invoke_status != kTfLiteOk) {
 		error_reporter->Report("Invoke failed on x_val: %f\n",
 				       static_cast<double>(x_val));
