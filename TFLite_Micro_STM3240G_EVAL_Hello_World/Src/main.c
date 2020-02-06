@@ -1,93 +1,174 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "data_types.h"
 #include "main_functions.h"
 #include "constants.h"
 #include "color.h"
-/* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
+#define USARTx USART3
+#define USARTx_CLK_ENABLE() __HAL_RCC_USART3_CLK_ENABLE();
+#define USARTx_RX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+#define USARTx_TX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
 
-/* USER CODE END PTD */
+#define USARTx_FORCE_RESET() __HAL_RCC_USART3_FORCE_RESET()
+#define USARTx_RELEASE_RESET() __HAL_RCC_USART3_RELEASE_RESET()
 
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
+/* Definition for USARTx Pins */
+#define USARTx_TX_PIN GPIO_PIN_10
+#define USARTx_TX_GPIO_PORT GPIOC
+#define USARTx_TX_AF GPIO_AF7_USART3
+#define USARTx_RX_PIN GPIO_PIN_11
+#define USARTx_RX_GPIO_PORT GPIOC
+#define USARTx_RX_AF GPIO_AF7_USART3
 
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
+#ifdef __GNUC__
+/* With GCC, small printf (option LD Linker->Libraries->Small printf
+     set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
 
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-osThreadId defaultTaskHandle;
-osThreadId blinkTaskHandleHandle;
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 void StartDefaultTask(void const *argument);
 void blink(void const *argument);
+void UARTTask(void const *argument);
 
-/* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
+osThreadId defaultTaskHandle;
+osThreadId UARTTaskHandle;
+osThreadId blinkTaskHandle;
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-FATFS SDFatFs; /* File system object for SD card logical drive */
-FIL MyFile; /* File object */
-char SDPath[4]; /* SD card logical drive path */
-static uint8_t buffer[_MAX_SS]; /* a work buffer for the f_mkfs() */
-
-/* USER CODE END 0 */
+/** FATFS SDFatFs; */
+/** FIL MyFile;  */
+/** char SDPath[4];  */
+/** static uint8_t buffer[_MAX_SS];  */
+UART_HandleTypeDef UartHandle;
 
 /**
-  * @brief  The application entry point.
-  * @retval int
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
   */
+PUTCHAR_PROTOTYPE
+{
+	/* Place your implementation of fputc here */
+	/* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
+	HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+
+	return ch;
+}
+
+void UARTTask(void const *argument)
+{
+	while (1) {
+		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		printf("Hello World\n");
+		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+	}
+}
+
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
+void StartDefaultTask(void const *argument)
+{
+	/* USER CODE BEGIN 5 */
+	circle_t *tmp_circle;
+	int count = 0;
+	uint16_t screen_height = BSP_LCD_GetYSize();
+	uint16_t screen_width = BSP_LCD_GetXSize();
+	uint16_t x_pos, y_pos;
+	setup();
+	/* Infinite loop */
+	for (;;) {
+		tmp_circle = loop();
+		if (tmp_circle) {
+			x_pos = (uint16_t)(tmp_circle->x * screen_width /
+					   (2 * PI));
+			y_pos = (uint16_t)((screen_height / 2) +
+					   tmp_circle->y * screen_height / 2);
+			BSP_LCD_FillCircle(x_pos, y_pos, tmp_circle->size);
+		}
+		count++;
+		if (count == 40)
+			vTaskSuspend(NULL);
+		else
+			HAL_Delay(100);
+	}
+	/* USER CODE END 5 */
+}
+
+/**
+* @brief Function implementing the blinkTaskHandle thread.
+* @param argument: Not used
+* @retval None
+*/
+void blink(void const *argument)
+{
+	int count = 0;
+
+	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
+
+	for (;;) {
+		count %= 10;
+
+		switch (count++) {
+		case 0:
+			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin,
+					  GPIO_PIN_SET);
+			break;
+		case 1:
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin,
+					  GPIO_PIN_SET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin,
+					  GPIO_PIN_SET);
+			break;
+		case 3:
+			/** HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, */
+			/**           GPIO_PIN_SET); */
+			break;
+		case 5:
+			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin,
+					  GPIO_PIN_RESET);
+			break;
+		case 6:
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin,
+					  GPIO_PIN_RESET);
+			break;
+		case 7:
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin,
+					  GPIO_PIN_RESET);
+			break;
+		case 8:
+			/** HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, */
+			/**           GPIO_PIN_RESET); */
+			break;
+		default:
+			break;
+		}
+
+		HAL_Delay(100);
+	}
+}
+
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
 	char *hello_str = "Hello World";
-	/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
-
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
-	/* USER CODE BEGIN Init */
 	/* Initialize the LCD */
 	BSP_LCD_Init();
 
@@ -123,58 +204,46 @@ int main(void)
 	/* Configure the system clock */
 	SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+	/** UartHandle.Instance = USARTx; */
+	/** UartHandle.Init.BaudRate = 9600; */
+	/** UartHandle.Init.WordLength = UART_WORDLENGTH_8B; */
+	/** UartHandle.Init.StopBits = UART_STOPBITS_1; */
+	/** UartHandle.Init.Parity = UART_PARITY_ODD; */
+	/** UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE; */
+	/** UartHandle.Init.Mode = UART_MODE_TX_RX; */
+	/** UartHandle.Init.OverSampling = UART_OVERSAMPLING_16; */
 
-	/* USER CODE END SysInit */
+	huart6.Instance = USART6;
+	huart6.Init.BaudRate = 9600;
+	huart6.Init.WordLength = UART_WORDLENGTH_8B;
+	huart6.Init.StopBits = UART_STOPBITS_1;
+	huart6.Init.Parity = UART_PARITY_ODD;
+	huart6.Init.Mode = UART_MODE_TX_RX;
+	huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+
+	if (HAL_UART_Init(&UartHandle) != HAL_OK) {
+		/* Initialization Error */
+		Error_Handler();
+	}
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
-	/* USER CODE BEGIN 2 */
 
-	/* USER CODE END 2 */
-
-	/* USER CODE BEGIN RTOS_MUTEX */
-	/* add mutexes, ... */
-	/* USER CODE END RTOS_MUTEX */
-
-	/* USER CODE BEGIN RTOS_SEMAPHORES */
-	/* add semaphores, ... */
-	/* USER CODE END RTOS_SEMAPHORES */
-
-	/* USER CODE BEGIN RTOS_TIMERS */
-	/* start timers, add new ones, ... */
-	/* USER CODE END RTOS_TIMERS */
-
-	/* USER CODE BEGIN RTOS_QUEUES */
-	/* add queues, ... */
-	/* USER CODE END RTOS_QUEUES */
-
-	/* Create the thread(s) */
-	/* definition and creation of defaultTask */
-	osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1280);
+	osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
 	defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-	/* definition and creation of blinkTaskHandle */
-	osThreadDef(blinkTaskHandle, blink, osPriorityIdle, 0, 128);
-	blinkTaskHandleHandle = osThreadCreate(osThread(blinkTaskHandle), NULL);
+	osThreadDef(UARTTaskHandle, UARTTask, osPriorityNormal, 0, 256);
+	UARTTaskHandle = osThreadCreate(osThread(UARTTaskHandle), NULL);
 
-	/* USER CODE BEGIN RTOS_THREADS */
-	/* add threads, ... */
-	/* USER CODE END RTOS_THREADS */
+	osThreadDef(blinkTaskHandle, blink, osPriorityNormal, 0, 256);
+	blinkTaskHandle = osThreadCreate(osThread(blinkTaskHandle), NULL);
 
 	/* Start scheduler */
 	osKernelStart();
 
-	/* We should never get here as control is now taken by the scheduler */
-
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
 	while (1) {
-		/* USER CODE END WHILE */
-
-		/* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
 }
 
 /**
@@ -183,15 +252,45 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
+	/** RCC_OscInitTypeDef RCC_OscInitStruct = { 0 }; */
+	/** RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 }; */
+	/**  */
+	/** __HAL_RCC_PWR_CLK_ENABLE(); */
+	/** __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1); */
+	/** RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI; */
+	/** RCC_OscInitStruct.HSIState = RCC_HSI_ON; */
+	/** RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT; */
+	/** RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON; */
+	/** RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI; */
+	/** RCC_OscInitStruct.PLL.PLLM = 8; */
+	/** RCC_OscInitStruct.PLL.PLLN = 168; */
+	/** RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2; */
+	/** RCC_OscInitStruct.PLL.PLLQ = 7; */
+	/** if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) { */
+	/**     Error_Handler(); */
+	/** } */
+	/** RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | */
+	/**                   RCC_CLOCKTYPE_SYSCLK | */
+	/**                   RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2; */
+	/** RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK; */
+	/** RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1; */
+	/** RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4; */
+	/** RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; */
+	/**  */
+	/** if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != */
+	/**     HAL_OK) { */
+	/**     Error_Handler(); */
+	/** } */
+
 	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
 	/** Configure the main internal regulator output voltage 
-  */
+           *   */
 	__HAL_RCC_PWR_CLK_ENABLE();
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 	/** Initializes the CPU, AHB and APB busses clocks 
-  */
+               *   */
 	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
 	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
 	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -205,7 +304,7 @@ void SystemClock_Config(void)
 		Error_Handler();
 	}
 	/** Initializes the CPU, AHB and APB busses clocks 
-  */
+                                   *   */
 	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK |
 				      RCC_CLOCKTYPE_SYSCLK |
 				      RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
@@ -597,117 +696,14 @@ static void MX_GPIO_Init(void)
 	HAL_GPIO_Init(MII_INT_GPIO_Port, &GPIO_InitStruct);
 }
 
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used 
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const *argument)
-{
-	/* USER CODE BEGIN 5 */
-	circle_t *tmp_circle;
-	int count = 0;
-    uint16_t screen_height = BSP_LCD_GetYSize();
-    uint16_t screen_width = BSP_LCD_GetXSize();
-    uint16_t x_pos, y_pos;
-	setup();
-	/* Infinite loop */
-	for (;;) {
-		tmp_circle = loop();
-		if (tmp_circle){
-            x_pos = (uint16_t)(tmp_circle->x * screen_width / (2 * PI));
-            y_pos = (uint16_t)((screen_height / 2) + tmp_circle->y * screen_height / 2);
-			BSP_LCD_FillCircle(x_pos, y_pos, tmp_circle->size);
-        }
-		count++;
-		if (count == 40)
-			vTaskSuspend(NULL);
-		else
-			osDelay(100);
-	}
-	/* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_blink */
-/**
-* @brief Function implementing the blinkTaskHandle thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_blink */
-void blink(void const *argument)
-{
-	/* USER CODE BEGIN blink */
-	/* Infinite loop */
-	int count = 0;
-
-	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
-
-	for (;;) {
-		count %= 10;
-
-		switch (count++) {
-		case 0:
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin,
-					  GPIO_PIN_SET);
-			break;
-		case 1:
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin,
-					  GPIO_PIN_SET);
-			break;
-		case 2:
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin,
-					  GPIO_PIN_SET);
-			break;
-		case 3:
-			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin,
-					  GPIO_PIN_SET);
-			break;
-		case 5:
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin,
-					  GPIO_PIN_RESET);
-			break;
-		case 6:
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin,
-					  GPIO_PIN_RESET);
-			break;
-		case 7:
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin,
-					  GPIO_PIN_RESET);
-			break;
-		case 8:
-			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin,
-					  GPIO_PIN_RESET);
-			break;
-		default:
-			break;
-		}
-
-		osDelay(100);
-	}
-	/* USER CODE END blink */
-}
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
 void Error_Handler(void)
 {
-	/* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
 	while (1) {
 	}
-	/* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -726,5 +722,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 	/* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
