@@ -1,25 +1,3 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -27,11 +5,8 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "stm324xg_eval.h"
 #include "stm324xg_eval_lcd.h"
 #include "stm324xg_eval_ts.h"
@@ -41,34 +16,30 @@ extern "C" {
 /* FatFs includes component */
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
-/* USER CODE END Includes */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
+#define USARTx USART3
+#define USARTx_CLK_ENABLE() __HAL_RCC_USART3_CLK_ENABLE();
+#define USARTx_RX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+#define USARTx_TX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
 
-/* USER CODE END ET */
+#define USARTx_FORCE_RESET() __HAL_RCC_USART3_FORCE_RESET()
+#define USARTx_RELEASE_RESET() __HAL_RCC_USART3_RELEASE_RESET()
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
+/* Definition for USARTx Pins */
+#define USARTx_TX_PIN GPIO_PIN_10
+#define USARTx_TX_GPIO_PORT GPIOC
+#define USARTx_TX_AF GPIO_AF7_USART3
+#define USARTx_RX_PIN GPIO_PIN_11
+#define USARTx_RX_GPIO_PORT GPIOC
+#define USARTx_RX_AF GPIO_AF7_USART3
 
-/* USER CODE END EC */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
-/* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
-/* USER CODE BEGIN EFP */
-void Touchscreen_Calibration (void);
+void Touchscreen_Calibration(void);
 uint16_t Calibration_GetX(uint16_t x);
 uint16_t Calibration_GetY(uint16_t y);
-uint8_t  IsCalibrationDone(void);
-/* USER CODE END EFP */
+uint8_t IsCalibrationDone(void);
 
-/* Private defines -----------------------------------------------------------*/
 #define A19_Pin GPIO_PIN_3
 #define A19_GPIO_Port GPIOE
 #define TRACE_CLK_Pin GPIO_PIN_2
@@ -123,12 +94,6 @@ uint8_t  IsCalibrationDone(void);
 #define FSMC_NWAIT_GPIO_Port GPIOD
 #define D2_Pin GPIO_PIN_0
 #define D2_GPIO_Port GPIOD
-#define MicroSDCard_D3_Pin GPIO_PIN_11
-#define MicroSDCard_D3_GPIO_Port GPIOC
-#define MicroSDCard_D2_Pin GPIO_PIN_10
-#define MicroSDCard_D2_GPIO_Port GPIOC
-#define USB_FS_DP_Pin GPIO_PIN_12
-#define USB_FS_DP_GPIO_Port GPIOA
 #define DCMI_D7_Pin GPIO_PIN_7
 #define DCMI_D7_GPIO_Port GPIOI
 #define DCMI_D6_Pin GPIO_PIN_6
@@ -339,14 +304,9 @@ uint8_t  IsCalibrationDone(void);
 #define ULPI_D4_GPIO_Port GPIOB
 #define MII_INT_Pin GPIO_PIN_14
 #define MII_INT_GPIO_Port GPIOB
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
