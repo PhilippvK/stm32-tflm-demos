@@ -5,6 +5,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 ENABLE_LANGUAGE(ASM)
 
+SET(TARGET tstm32f4HAL)
+ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
+
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
 # Also remove "undefined reference to `_sbrk'" error
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
@@ -73,8 +76,6 @@ file(GLOB PROJECT_SOURCES
     )
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
-
-ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
 
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf

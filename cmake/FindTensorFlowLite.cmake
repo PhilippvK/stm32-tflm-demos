@@ -146,7 +146,7 @@ ELSE()
             )
         
         SET(TFLITE_PLATFORM_SOURCES
-            tensorflow/lite/micro/debug_log.cc
+            # tensorflow/lite/micro/debug_log.cc
             tensorflow/lite/micro/debug_log_numbers.cc
             tensorflow/lite/micro/memory_helpers.cc
             tensorflow/lite/micro/micro_allocator.cc
@@ -159,6 +159,12 @@ ELSE()
             tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
             tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
             )
+
+        IF(TARGET)
+            LIST(APPEND TFLITE_PLATFORM_SOURCES tensorflow/lite/micro/${TARGET}/debug_log.cc)
+        ELSE()
+            LIST(APPEND TFLITE_PLATFORM_SOURCES tensorflow/lite/micro/debug_log.cc)
+        ENDIF()
 
         SET(TFLITE_KERNEL_HEADERS
             tensorflow/lite/micro/kernels/activation_utils.h
