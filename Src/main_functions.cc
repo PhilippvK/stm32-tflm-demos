@@ -49,6 +49,8 @@ void setup()
 	static tflite::MicroErrorReporter micro_error_reporter;
 	error_reporter = &micro_error_reporter;
 
+	error_reporter->Report("Hello from the error reporter");
+
 	// Map the model into a usable data structure. This doesn't involve any
 	// copying or parsing, it's a very lightweight operation.
 	model = tflite::GetModel(g_sine_model_data);
@@ -87,11 +89,12 @@ void setup()
 }
 
 // The name of this function is important for Arduino compatibility.
-circle_t * loop()
+circle_t *loop()
 {
-    circle_t *ret = (circle_t*)malloc(sizeof(circle_t));
-    if(!ret) return NULL;
-    ret->size = 4;
+	circle_t *ret = (circle_t *)malloc(sizeof(circle_t));
+	if (!ret)
+		return NULL;
+	ret->size = 4;
 	// Calculate an x value to feed into the model. We compare the current
 	// inference_count to the number of inferences per cycle to determine
 	// our position within the range of possible x values the model was
@@ -114,8 +117,8 @@ circle_t * loop()
 	// Read the predicted y value from the model's output tensor
 	float y_val = output->data.f[0];
 
-    ret->x=x_val;
-    ret->y=y_val;
+	ret->x = x_val;
+	ret->y = y_val;
 
 	// Increment the inference_counter, and reset it if we have reached
 	// the total number per cycle
@@ -123,5 +126,5 @@ circle_t * loop()
 	if (inference_count >= kInferencesPerCycle)
 		inference_count = 0;
 
-    return ret;
+	return ret;
 }

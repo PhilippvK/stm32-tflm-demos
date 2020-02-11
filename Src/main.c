@@ -29,7 +29,6 @@ osThreadId blinkTaskHandle;
 /** char SDPath[4];  */
 /** static uint8_t buffer[_MAX_SS];  */
 UART_HandleTypeDef UartHandle;
-UART_HandleTypeDef huart6;
 
 /**
   * @brief  Retargets the C library printf function to the USART.
@@ -51,7 +50,6 @@ void UARTTask(void const *argument)
 		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
 		HAL_Delay(500);
 		printf("Hello World\n");
-		/** HAL_UART_Transmit(&UartHandle, (uint8_t *)my_str, strlen(my_str), HAL_MAX_DELAY); */
 		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
 		HAL_Delay(500);
 	}
