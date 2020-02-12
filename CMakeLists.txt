@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 ENABLE_LANGUAGE(ASM)
 
-SET(TARGET tstm32f4HAL)
+SET(TARGET stm32f4HAL)
 ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
 
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
