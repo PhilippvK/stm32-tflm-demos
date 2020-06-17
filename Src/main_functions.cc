@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#include "tensorflow/lite/micro/kernels/all_ops_resolver.h"
+#include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -23,7 +23,8 @@ limitations under the License.
 #include "data_types.h"
 
 #include "constants.h"
-#include "sine_model_data.h"
+extern unsigned char sine_model_quantized_tflite[];
+extern unsigned int sine_model_quantized_tflite_len;
 // Globals, used for compatibility with Arduino-style sketches.
 namespace
 {
@@ -37,7 +38,7 @@ int inference_count = 0;
 // Create an area of memory to use for input, output, and intermediate arrays.
 // Finding the minimum value for your model may require some trial and error.
 constexpr int kTensorArenaSize = 2 * 1024;
-uint8_t tensor_arena[kTensorArenaSize];
+uint8_t tensor_arena[kTensorArenaSize] __attribute__((aligned (16)));
 } // namespace
 
 // The name of this function is important for Arduino compatibility.
@@ -49,11 +50,11 @@ void setup()
 	static tflite::MicroErrorReporter micro_error_reporter;
 	error_reporter = &micro_error_reporter;
 
-	error_reporter->Report("Hello from the error reporter");
+    error_reporter->Report("Hello from the error reporter");
 
 	// Map the model into a usable data structure. This doesn't involve any
 	// copying or parsing, it's a very lightweight operation.
-	model = tflite::GetModel(g_sine_model_data);
+	model = tflite::GetModel(sine_model_quantized_tflite);
 	if (model->version() != TFLITE_SCHEMA_VERSION) {
 		error_reporter->Report(
 			"Model provided is schema version %d not equal "
@@ -64,7 +65,7 @@ void setup()
 
 	// This pulls in all the operation implementations we need.
 	// NOLINTNEXTLINE(runtime-global-variables)
-	static tflite::ops::micro::AllOpsResolver resolver;
+	static tflite::AllOpsResolver resolver;
 
 	// Build an interpreter to run the model with.
 	static tflite::MicroInterpreter static_interpreter(model, resolver,

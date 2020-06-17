@@ -11,7 +11,7 @@ ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
 # Also remove "undefined reference to `_sbrk'" error
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS})
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
 
 set(STM32_CHIP STM32F407IGH6)
@@ -33,16 +33,8 @@ endif()
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
-set(TFLITE_SOURCE "${CMAKE_BINARY_DIR}/tensorflow")
-if(EXISTS ${TFLITE_SOURCE})
-    message("TensorFlow sources directory exists")
-else()
-    message("Getting TensorFlow sources")
-    set(GIT_REPOSITORY "https://github.com/tensorflow/tensorflow.git")
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
-endif()
+FIND_PACKAGE(TFLite REQUIRED)
 
-SET(TF_DIR "${TFLITE_SOURCE}")
 SET(TFLITE_PLATFORM micro)
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
@@ -50,13 +42,11 @@ set(STM32Cube_DIR ${CUBE_SOURCE})
 SET(FREERTOS_HEAP_IMPL 1)
 
 FIND_PACKAGE(FreeRTOS REQUIRED)
-SET(STORAGE_DRIVER "SDCARD")
-FIND_PACKAGE(FATFS REQUIRED)
-FIND_PACKAGE(CMSIS COMPONENTS NN REQUIRED)
-FIND_PACKAGE(STM32HAL REQUIRED)
+# SET(STORAGE_DRIVER "SDCARD")
+FIND_PACKAGE(CMSIS REQUIRED)
+FIND_PACKAGE(STM32HAL COMPONENTS sram gpio uart REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS fsmc sdmmc REQUIRED)
 FIND_PACKAGE(STM32BSP COMPONENTS sd sram ts io lcd ili9325 stmpe811 REQUIRED)
-FIND_PACKAGE(TensorFlowLite REQUIRED)
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -66,13 +56,13 @@ INCLUDE_DIRECTORIES(
     ${CMSIS_INCLUDE_DIRS}
     ${FreeRTOS_INCLUDE_DIRS}
     ${STM32BSP_INCLUDE_DIR}
-    ${FATFS_INCLUDE_DIRS}
-    ${TensorFlowLite_INCLUDE_DIRS}
+    ${TFLite_INCLUDE_DIRS}
     )
 
 file(GLOB PROJECT_SOURCES
     "Src/*.c"
     "Src/*.cc"
+    "Src/*.cpp"
     )
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
@@ -81,12 +71,11 @@ ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
     ${STM32HAL_SOURCES}
-    ${CMSIS_SOURCES}
     ${STM32BSP_SOURCES}
     ${STM32LL_SOURCES}
-    ${FATFS_SOURCES}
     ${FreeRTOS_SOURCES}
-    ${TensorFlowLite_SOURCES}
+    ${TFLite_SOURCES}
+    ${CMSIS_SOURCES}
     )
 
 TARGET_COMPILE_DEFINITIONS(${CMAKE_PROJECT_NAME}.elf PUBLIC STM_BSP)
@@ -100,7 +89,6 @@ ADD_CUSTOM_TARGET(
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
 
 set(OPENOCD_BOARD "board/stm3241g_eval_stlink.cfg")
-
 
 ADD_CUSTOM_TARGET(
     debug
