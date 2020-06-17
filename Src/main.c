@@ -164,8 +164,8 @@ int main(void)
 
 	MX_GPIO_Init();
 
-    /** osThreadDef(defaultTask, inferenceTask, osPriorityNormal, 0, 256); */
-    /** defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL); */
+    osThreadDef(defaultTask, inferenceTask, osPriorityNormal, 0, 256);
+    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     osThreadDef(UARTTaskHandle, UARTTask, osPriorityNormal, 0, 256);
     UARTTaskHandle = osThreadCreate(osThread(UARTTaskHandle), NULL);
