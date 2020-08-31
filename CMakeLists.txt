@@ -1,4 +1,9 @@
-PROJECT(STM32F40G_EVAL LANGUAGES C CXX)
+# Fix For MACOS compability
+if (APPLE)
+    set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+endif()
+
+PROJECT(STM32F40G_EVA LANGUAGES C CXX)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
@@ -7,6 +12,7 @@ ENABLE_LANGUAGE(ASM)
 
 SET(TARGET stm32f4HAL)
 ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
+#SET(TOOLCHAIN_PREFIX "/usr/local") # Set depending on System (f.e. Homebrew)
 
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
 # Also remove "undefined reference to `_sbrk'" error
