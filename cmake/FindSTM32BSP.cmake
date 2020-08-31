@@ -1,7 +1,7 @@
 MESSAGE("STM Board: ${STM_BOARD}")
 IF(STM32_FAMILY STREQUAL "F4")
 	IF(STM_BOARD STREQUAL "STM32F429I-Discovery")
-		SET(BSP_COMPONENTS 
+		SET(BSP_COMPONENTS
                 eeprom
 			    gyroscope
 			    io
@@ -12,18 +12,30 @@ IF(STM32_FAMILY STREQUAL "F4")
 		SET(BSP_HEADERS stm32f429i_discovery.h)
 		SET(BSP_SRC stm32f429i_discovery.c)
 	ENDIF()
-    IF(STM_BOARD STREQUAL "STM324xG_EVAL")
-        SET(BSP_COMPONENTS 
-            lcd 
-            camera 
-            eeprom 
-            io 
-            sd 
-            sram 
+   # IF(STM_BOARD STREQUAL "STM324xG_EVAL")
+   #     SET(BSP_COMPONENTS
+   #         lcd
+   #         camera
+   #         eeprom
+   #         io
+   #         sd
+   #         sram
+   #         ts)
+   #     SET(BSP_PREFIX stm324xg_eval_)
+   #     SET(BSP_HEADERS stm324xg_eval.h)
+   #     SET(BSP_SRC stm324xg_eval.c)
+   # ENDIF()
+    IF(STM_BOARD STREQUAL "STM32F413H-Discovery")
+        SET(BSP_COMPONENTS
+            audio
+            lcd
+            qspi
+            sd
+            psram
             ts)
-        SET(BSP_PREFIX stm324xg_eval_)
-        SET(BSP_HEADERS stm324xg_eval.h)
-        SET(BSP_SRC stm324xg_eval.c)
+        SET(BSP_PREFIX stm32f413h_discovery_)
+        SET(BSP_HEADERS stm32f413h_discovery.h)
+        SET(BSP_SRC stm32f413h_discovery.c)
     ENDIF()
 	set(COMMON_COMPONENTS ampire480272
 			      ampire640480
@@ -40,10 +52,12 @@ IF(STM32_FAMILY STREQUAL "F4")
 			      ov2640
 			      s5k5cag
 			      st7735
+            st7789h2
 			      stmpe1600
 			      stmpe811
 			      ts3510
 			      wm8994
+            ft6x06
 			      )
 ENDIF()
 
