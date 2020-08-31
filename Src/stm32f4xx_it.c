@@ -21,8 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_it.h"
-#include "FreeRTOS.h"
-#include "task.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -60,7 +58,9 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
+extern I2S_HandleTypeDef               haudio_i2s;
+extern DFSDM_Filter_HandleTypeDef      hAudioInDfsdmFilter[];
+extern SRAM_HandleTypeDef psramHandle;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -140,6 +140,19 @@ void UsageFault_Handler(void)
 }
 
 /**
+  * @brief This function handles System service call via SWI instruction.
+  */
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVCall_IRQn 0 */
+
+  /* USER CODE END SVCall_IRQn 0 */
+  /* USER CODE BEGIN SVCall_IRQn 1 */
+
+  /* USER CODE END SVCall_IRQn 1 */
+}
+
+/**
   * @brief This function handles Debug monitor.
   */
 void DebugMon_Handler(void)
@@ -153,6 +166,23 @@ void DebugMon_Handler(void)
 }
 
 /**
+  * @brief This function handles Pendable request for system service.
+  */
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
+
+// TODO
+int vol = 40;
+int counter = 0;
+
+/**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
@@ -161,14 +191,14 @@ void SysTick_Handler(void)
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
-#if (INCLUDE_xTaskGetSchedulerState == 1 )
-  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
-  {
-#endif /* INCLUDE_xTaskGetSchedulerState */
-  xPortSysTickHandler();
-#if (INCLUDE_xTaskGetSchedulerState == 1 )
+  counter++;
+  if (counter == 100) {
+	  counter = 0;
+	  if (allow) {
+		  BSP_AUDIO_OUT_SetVolume(vol);
+		  vol = (vol + 5) % 50;
+	  }
   }
-#endif /* INCLUDE_xTaskGetSchedulerState */
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -182,6 +212,71 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(WAKEUP_BUTTON_PIN);
+}
 
+/**
+  * @brief  This function handles External line 1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(TS_INT_PIN);
+}
+
+/**
+  * @brief  This function handles DMA1 Stream5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void BSP_PSRAM_DMA_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(psramHandle.hdma);
+}
+
+/**
+  * @brief  This function handles DFSDM MIC1 DMA interrupt request.
+  * @param  None
+  * @retval None
+  */
+void AUDIO_DFSDM_DMAx_MIC1_IRQHandler(void)
+{
+  //if(SdmmcTest == 1)
+  //{
+   // HAL_DMA_IRQHandler(uSdHandle.hdmatx);
+  //}
+  //else
+  //{
+    HAL_DMA_IRQHandler(hAudioInDfsdmFilter[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)].hdmaReg);
+  //}
+}
+
+/**
+  * @brief  This function handles DFSDM MIC2 DMA interrupt request.
+  * @param  None
+  * @retval None
+  */
+void AUDIO_DFSDM_DMAx_MIC2_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hAudioInDfsdmFilter[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)].hdmaReg);
+}
+
+/**
+  * @brief  This function handles I2S DMA interrupt request.
+  * @param  None
+  * @retval None
+  */
+void AUDIO_OUT_I2Sx_DMAx_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(haudio_i2s.hdmatx);
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
