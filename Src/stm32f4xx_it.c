@@ -195,7 +195,7 @@ void SysTick_Handler(void)
   if (counter == 100) {
 	  counter = 0;
 	  if (allow) {
-		  BSP_AUDIO_OUT_SetVolume(vol);
+		  //BSP_AUDIO_OUT_SetVolume(vol);
 		  vol = (vol + 5) % 50;
 	  }
   }

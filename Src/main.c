@@ -22,6 +22,11 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+// TODO
+#include "data_types.h"
+#include "main_functions.h"
+#include "constants.h"
+#include "color.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -35,6 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define HEADBAND_HEIGHT    64
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,6 +58,7 @@ TS_StateTypeDef TS_State;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 static void myBSP_Init(void);
+static void TF_HelloWorld_demo(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -97,9 +104,10 @@ int main(void)
   while (1)
   {
 	AudioRecDfsdm_demo();
-	int8_t buffer[1];
-	HAL_UART_Receive(&huart6, buffer, sizeof(buffer), HAL_MAX_DELAY);
-	HAL_UART_Transmit(&huart6, buffer, sizeof(buffer), HAL_MAX_DELAY);
+	TF_HelloWorld_demo();
+	//int8_t buffer[1];
+	//HAL_UART_Receive(&huart6, buffer, sizeof(buffer), HAL_MAX_DELAY);
+	//HAL_UART_Transmit(&huart6, buffer, sizeof(buffer), HAL_MAX_DELAY);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -175,6 +183,65 @@ static void myBSP_Init(void)
   uint8_t hello_str[20];
   sprintf(hello_str, "Hello World!");
   BSP_LCD_DisplayStringAt(0, 2, (uint8_t *)hello_str, CENTER_MODE);
+}
+
+/**
+  * @brief  Display Audio Record demo hint
+  * @param  None
+  * @retval None
+  */
+static void HelloWorld_SetHint(void)
+{
+  /* Clear the LCD */
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+
+  /* Set Audio Demo description */
+  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+  BSP_LCD_FillRect(0, 0, BSP_LCD_GetXSize(), HEADBAND_HEIGHT);
+  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+  BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
+  BSP_LCD_SetFont(&Font16);
+  BSP_LCD_DisplayStringAt(0, 1, (uint8_t *)"TFLITE SINE EXAMPLE", CENTER_MODE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_DisplayStringAt(0, 20, (uint8_t *)"Drawing 40 points", CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, 35, (uint8_t *)"on sine wave model", CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, 50, (uint8_t *)"Press BUTTON for next", CENTER_MODE);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+}
+
+static void TF_HelloWorld_demo()
+{
+  int counter = 0;
+	circle_t *tmp_circle;
+	int count = 0;
+	uint16_t screen_height = BSP_LCD_GetYSize();
+	uint16_t screen_width = BSP_LCD_GetXSize();
+	uint16_t x_pos, y_pos;
+  HelloWorld_SetHint();
+	setup();
+  for(;;) {
+   	if (count < 40) {
+	  	tmp_circle = loop();
+	   	if (tmp_circle) {
+	   		x_pos = (uint16_t)(tmp_circle->x * screen_width /
+	   				   (2 * PI)) + tmp_circle->size/2;
+	   		y_pos = (uint16_t)(HEADBAND_HEIGHT + ((screen_height-HEADBAND_HEIGHT) / 2) +
+	   				   tmp_circle->y * (screen_height-HEADBAND_HEIGHT-tmp_circle->size*10) / 2);
+	   		BSP_LCD_FillCircle(x_pos, y_pos, tmp_circle->size);
+	   	}
+	   	count++;
+    } else {
+      count = 0;
+      BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+      BSP_LCD_FillRect(0, HEADBAND_HEIGHT, BSP_LCD_GetXSize(), screen_height-HEADBAND_HEIGHT);
+      BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+    }
+    if (CheckForUserInput() > 0) {
+      return;
+    } else {
+	   	HAL_Delay(100);
+    }
+  }
 }
 /* USER CODE END 4 */
 
