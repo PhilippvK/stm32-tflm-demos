@@ -92,23 +92,23 @@ int allow = 0;
 void AudioRecDfsdm_demo (void)
 {
   AudioRec_SetHint();
-  
+
   __IO uint32_t uwVolume = 70;
   uint32_t AudioFreq[1] = {I2S_AUDIOFREQ_44K};
   uint32_t *AudioFreq_ptr;
   uint8_t FreqStr[25] = {0};
-  
-  AudioFreq_ptr = AudioFreq; 
-  
+
+  AudioFreq_ptr = AudioFreq;
+
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
   BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
   BSP_LCD_FillRect(0, HEADBAND_HEIGHT, BSP_LCD_GetXSize(), BSP_LCD_GetYSize() - HEADBAND_HEIGHT);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  
-  
+
+
   sprintf((char*)FreqStr,"      FREQ: %lu     ", *AudioFreq_ptr);
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 145, (uint8_t *)FreqStr, CENTER_MODE);
-  
+
   BSP_AUDIO_IN_AllocScratch (Scratch, SCRATCH_BUFF_SIZE);
   /* Initialize Audio Recorder */
   if (BSP_AUDIO_IN_Init(*AudioFreq_ptr, DEFAULT_AUDIO_IN_BIT_RESOLUTION, DEFAULT_AUDIO_IN_CHANNEL_NBR) != AUDIO_OK)
@@ -124,25 +124,25 @@ void AudioRecDfsdm_demo (void)
     BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
     BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
     BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize() - 130, (uint8_t *)"Audio record init OK", CENTER_MODE);
-    
+
     audio_rec_buffer_state = BUFFER_OFFSET_NONE;
-    
+
     /* Display the state on the screen */
     BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
     BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
     BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize() - 115, (uint8_t *)"Buffering...", CENTER_MODE);
-    
+
     /* Start Recording */
     BSP_AUDIO_IN_Record(internal_buffer, AUDIO_BLOCK_SIZE);
-    
+
     BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
     BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
     BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize() - 85, (uint8_t *)"Start Playback...", CENTER_MODE);
-    
+
     /* -----------Start Playback -------------- */
     /* Initialize audio OUT at REC_FREQ*/
     BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, uwVolume, *AudioFreq_ptr);
-    
+
     /* Play the recorded buffer*/
     BSP_AUDIO_OUT_Play(&internal_buffer[0], AUDIO_BLOCK_SIZE * 2);
     allow = 1;
@@ -156,10 +156,10 @@ void AudioRecDfsdm_demo (void)
       BSP_AUDIO_OUT_Stop(CODEC_PDWN_HW);
       BSP_AUDIO_OUT_DeInit();
       BSP_AUDIO_IN_Stop();
-      BSP_AUDIO_IN_DeInit(); 
+      BSP_AUDIO_IN_DeInit();
       return;
     }
-  } 
+  }
 }
 
 /**
