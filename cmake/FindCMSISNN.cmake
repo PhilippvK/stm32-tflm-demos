@@ -13,35 +13,13 @@ IF(NOT arm_cmsis_POPULATED)
     EXECUTE_PROCESS(COMMAND git -C ${arm_cmsis_SOURCE_DIR} checkout develop)
 ENDIF()
 
-# FIND_PACKAGE(Fixedpoint)
-
 SET(ARM_CMSIS_DIR ${arm_cmsis_SOURCE_DIR}/CMSIS)
 
 SET(CMSISNN_CORE_HEADERS
-    # cmsis_armcc.h
-    # cmsis_armclang.h
-    # cmsis_armclang_ltm.h
     cmsis_compiler.h
     cmsis_gcc.h
-    # cmsis_iccarm.h
     cmsis_version.h
-    # core_armv81mml.h
-    # core_armv8mbl.h
-    # core_armv8mml.h
-    # core_cm0.h
-    # core_cm0plus.h
-    # core_cm1.h
-    # core_cm23.h
-    # core_cm33.h
-    # core_cm35p.h
     core_cm3.h
-    # core_cm4.h
-    # core_cm7.h
-    # core_sc000.h
-    # core_sc300.h
-    # mpu_armv7.h
-    # mpu_armv8.h
-    # tz_context.h
     )
 
 SET(CMSIS_NN_HEADERS
@@ -50,7 +28,18 @@ SET(CMSIS_NN_HEADERS
     arm_nn_tables.h
     )
 
-# FILE(GLOB CMSIS_NN_SOURCES ${ARM_CMSIS_DIR}/NN/Source/*/*.c)
+SET(CMSIS_NN_SRCS
+    arm_relu_q7.c
+    arm_fully_connected_q7.c
+    arm_softmax_q7.c
+    arm_q7_to_q15_reordered_no_shift.c
+    arm_convolve_HWC_q7_basic_nonsquare.c
+    arm_q7_to_q15_no_shift.c
+    arm_nn_mat_mult_kernel_q7_q15.c
+    arm_depthwise_separable_conv_HWC_q7_nonsquare.c
+    arm_convolve_1x1_HWC_q7_fast_nonsquare.c
+    arm_nn_mat_mult_kernel_q7_q15_reordered.c
+    )
 
 FIND_PATH(CMSIS_NN_INC_DIR ${CMSIS_NN_HEADERS}
     PATHS ${ARM_CMSIS_DIR}/NN/Include
@@ -73,45 +62,15 @@ SET(CMSIS_DSP_PRIVATE_HEADERS
     )
 
 SET(CMSIS_DSP_SRCS
-    # BasicMathFunctions.c
-    # arm_gaussian_naive_bayes_predict_f32.c
-    # CommonTables.c
-    # ComplexMathFunctions.c
-    # ControllerFunctions.c
-    # arm_boolean_distance.c
-    # arm_boolean_distance_template.h
-    # arm_braycurtis_distance_f32.c
-    # arm_canberra_distance_f32.c
-    # arm_chebyshev_distance_f32.c
-    # arm_cityblock_distance_f32.c
-    # arm_correlation_distance_f32.c
-    # arm_cosine_distance_f32.c
-    # arm_dice_distance.c
-    # arm_euclidean_distance_f32.c
-    # arm_hamming_distance.c
-    # arm_jaccard_distance.c
-    # arm_jensenshannon_distance_f32.c
-    # arm_kulsinski_distance.c
-    # arm_minkowski_distance_f32.c
-    # arm_rogerstanimoto_distance.c
-    # arm_russellrao_distance.c
-    # arm_sokalmichener_distance.c
-    # arm_sokalsneath_distance.c
-    # arm_yule_distance.c
-    # FastMathFunctions.c
-    # FilteringFunctions.c
-    # MatrixFunctions.c
-    # StatisticsFunctions.c
-    # SupportFunctions.c
-    # arm_svm_linear_init_f32.c
-    # arm_svm_linear_predict_f32.c
-    # arm_svm_polynomial_init_f32.c
-    # arm_svm_polynomial_predict_f32.c
-    # arm_svm_rbf_init_f32.c
-    # arm_svm_rbf_predict_f32.c
-    # arm_svm_sigmoid_init_f32.c
-    # arm_svm_sigmoid_predict_f32.c
-    # TransformFunctions.c
+    arm_rfft_fast_init_f32.c
+    arm_rfft_fast_f32.c
+    arm_common_tables.c
+    arm_const_structs.c
+    arm_cfft_f32.c
+    arm_cfft_init_f32.c
+    arm_cfft_radix8_f32.c
+    arm_bitreversal2.S
+    arm_copy_q7.c
     )
 
 FOREACH(SRC ${CMSIS_DSP_SRCS})
@@ -138,6 +97,23 @@ FOREACH(SRC ${CMSIS_DSP_SRCS})
     LIST(APPEND CMSIS_DSP_SOURCES ${CMSIS_DSP_${SRC_CLEAN}_FILE})
 ENDFOREACH()
 
+FOREACH(SRC ${CMSIS_NN_SRCS})
+    STRING(MAKE_C_IDENTIFIER "${SRC}" SRC_CLEAN)
+    SET(CMSIS_NN_${SRC_CLEAN}_FILE ${SRC_CLEAN}-NOTFOUND)
+    FIND_FILE(CMSIS_NN_${SRC_CLEAN}_FILE ${SRC}
+        PATH_SUFFIXES
+        ActivationFunctions
+        ConvolutionFunctions
+        FullyConnectedFunctions
+        NNSupportFunctions
+        PoolingFunctions
+        SoftmaxFunctions
+        PATHS ${ARM_CMSIS_DIR}/NN/Source
+        CMAKE_FIND_ROOT_PATH_BOTH
+        )
+    LIST(APPEND CMSIS_NN_SOURCES ${CMSIS_NN_${SRC_CLEAN}_FILE})
+ENDFOREACH()
+
 FIND_PATH(CMSIS_DSP_PRIVATE_INC_DIR ${CMSIS_DSP_PRIVATE_HEADERS}
     PATHS ${ARM_CMSIS_DIR}/DSP/PrivateInclude
     CMAKE_FIND_ROOT_PATH_BOTH
@@ -160,24 +136,8 @@ SET(CMSISNN_INCLUDE_DIRS
 
 SET(CMSISNN_SOURCES
     ${CMSIS_DSP_SOURCES}
-    # ${CMSIS_NN_SOURCES}
+    ${CMSIS_NN_SOURCES}
     )
-
-# IF(STM32_FAMILY STREQUAL "F0")
-#     ADD_DEFINITIONS(-DARM_MATH_CM0)
-# ELSEIF(STM32_FAMILY STREQUAL "F3")
-#     ADD_DEFINITIONS(-DARM_MATH_CM3)
-# ELSEIF(STM32_FAMILY STREQUAL "F4")
-#     #TODO find better solution to this
-#     # ADD_DEFINITIONS(-D__FPU_PRESENT=1)
-#     ADD_DEFINITIONS(-DARM_MATH_CM4)
-# ELSEIF(STM32_FAMILY STREQUAL "F7")
-#     ADD_DEFINITIONS(-DARM_MATH_CM7)
-# ELSEIF(STM32_FAMILY STREQUAL "L0")
-#     ADD_DEFINITIONS(-DARM_MATH_CM0PLUS)
-# ELSE()
-#     MESSAGE(STATUS "ARM_MATH define not found, see arm_math.h")
-# ENDIF()
 
 INCLUDE(FindPackageHandleStandardArgs)
 
