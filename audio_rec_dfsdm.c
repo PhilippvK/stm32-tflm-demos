@@ -68,14 +68,14 @@ uint16_t  internal_buffer[AUDIO_BLOCK_SIZE];
 /* Global variables ---------------------------------------------------------*/
 __IO uint32_t  audio_rec_buffer_state;
 
-#if defined ( __CC_ARM )  /* !< ARM Compiler */
-  int32_t Scratch [SCRATCH_BUFF_SIZE] __attribute__((at(0x2000E000)));
-#elif defined ( __ICCARM__ )  /* !< ICCARM Compiler */
-#pragma location=0x2000E000
-int32_t Scratch [SCRATCH_BUFF_SIZE];
-#elif defined ( __GNUC__ )  /* !< GNU Compiler */
-  int32_t Scratch [SCRATCH_BUFF_SIZE] __attribute__((section(".scratch_section")));
-#endif
+//#if defined ( __CC_ARM )  /* !< ARM Compiler */
+//  int32_t Scratch [SCRATCH_BUFF_SIZE] __attribute__((at(0x2000E000)));
+//#elif defined ( __ICCARM__ )  /* !< ICCARM Compiler */
+//#pragma location=0x2000E000
+//int32_t Scratch [SCRATCH_BUFF_SIZE];
+//#elif defined ( __GNUC__ )  /* !< GNU Compiler */
+//  int32_t Scratch [SCRATCH_BUFF_SIZE] __attribute__((section(".scratch_section")));
+//#endif
 
 /* Private function prototypes -----------------------------------------------*/
 static void AudioRec_SetHint(void);
@@ -185,47 +185,47 @@ static void AudioRec_SetHint(void)
   BSP_LCD_DisplayStringAt(0, 50, (uint8_t *)"Press BUTTON for next", CENTER_MODE);
 }
 
-/**
-  * @brief Manages the DMA Transfer complete interrupt.
-  * @param None
-  * @retval None
-  */
-void BSP_AUDIO_IN_TransferComplete_CallBack()
-{
-  audio_rec_buffer_state |= BUFFER_OFFSET_FULL;
-}
-
-/**
-  * @brief  Manages the DMA Half Transfer complete interrupt.
-  * @param  None
-  * @retval None
-  */
-void BSP_AUDIO_IN_HalfTransfer_CallBack()
-{
-  audio_rec_buffer_state = BUFFER_OFFSET_HALF;
-}
-
-/**
-  * @brief  Audio IN Error callback function.
-  * @param  None
-  * @retval None
-  */
-void BSP_AUDIO_IN_Error_Callback(void)
-{
-  /* This function is called when an Interrupt due to transfer error on or peripheral
-     error occurs. */
-  /* Display message on the LCD screen */
-  BSP_LCD_SetBackColor(LCD_COLOR_RED);
-  BSP_LCD_DisplayStringAt(0, LINE(14), (uint8_t *)"       DMA  ERROR     ", CENTER_MODE);
-
-  /* Stop the program with an infinite loop */
-  while (BSP_PB_GetState(BUTTON_WAKEUP) != RESET)
-  {
-    return;
-  }
-  /* could also generate a system reset to recover from the error */
-  /* .... */
-}
+///**
+//  * @brief Manages the DMA Transfer complete interrupt.
+//  * @param None
+//  * @retval None
+//  */
+//void BSP_AUDIO_IN_TransferComplete_CallBack()
+//{
+//  audio_rec_buffer_state |= BUFFER_OFFSET_FULL;
+//}
+//
+///**
+//  * @brief  Manages the DMA Half Transfer complete interrupt.
+//  * @param  None
+//  * @retval None
+//  */
+//void BSP_AUDIO_IN_HalfTransfer_CallBack()
+//{
+//  audio_rec_buffer_state = BUFFER_OFFSET_HALF;
+//}
+//
+///**
+//  * @brief  Audio IN Error callback function.
+//  * @param  None
+//  * @retval None
+//  */
+//void BSP_AUDIO_IN_Error_Callback(void)
+//{
+//  /* This function is called when an Interrupt due to transfer error on or peripheral
+//     error occurs. */
+//  /* Display message on the LCD screen */
+//  BSP_LCD_SetBackColor(LCD_COLOR_RED);
+//  BSP_LCD_DisplayStringAt(0, LINE(14), (uint8_t *)"       DMA  ERROR     ", CENTER_MODE);
+//
+//  /* Stop the program with an infinite loop */
+//  while (BSP_PB_GetState(BUTTON_WAKEUP) != RESET)
+//  {
+//    return;
+//  }
+//  /* could also generate a system reset to recover from the error */
+//  /* .... */
+//}
 /**
   * @}
   */

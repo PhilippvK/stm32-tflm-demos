@@ -56,6 +56,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
+uint8_t CheckForUserInput(void);
 
 /* USER CODE BEGIN EFP */
 

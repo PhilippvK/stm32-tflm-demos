@@ -191,6 +191,7 @@ void SysTick_Handler(void)
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
+  /*
   counter++;
   if (counter == 100) {
 	  counter = 0;
@@ -199,6 +200,7 @@ void SysTick_Handler(void)
 		  vol = (vol + 5) % 50;
 	  }
   }
+  */
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
