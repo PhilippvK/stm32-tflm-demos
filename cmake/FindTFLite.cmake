@@ -86,6 +86,7 @@ ENDIF()
 
 SET(TFL_SRC ${TF_SRC}/tensorflow/lite)
 SET(TFLM_SRC ${TFL_SRC}/micro)
+SET(TFLE_SRC ${TFL_SRC}/experimental)
 SET(TFLD_SRC ${TFL_SRC}/tools/make/downloads)
 
 IF(EXISTS ${TFLD_SRC}/flatbuffers/include)
@@ -122,12 +123,35 @@ FILE(GLOB TFL_MEM_PLANNER_SRCS
     ${TFLM_SRC}/memory_planner/*.cc
     )
 
+FILE(GLOB TFL_EXP_C_SRCS
+    ${TFLE_SRC}/microfrontend/lib/frontend_util.c
+    ${TFLE_SRC}/microfrontend/lib/frontend.c
+    ${TFLE_SRC}/microfrontend/lib/filterbank_util.c
+    ${TFLE_SRC}/microfrontend/lib/filterbank.c
+    ${TFLE_SRC}/microfrontend/lib/pcan_gain_control_util.c
+    ${TFLE_SRC}/microfrontend/lib/pcan_gain_control.c
+    ${TFLE_SRC}/microfrontend/lib/noise_reduction_util.c
+    ${TFLE_SRC}/microfrontend/lib/noise_reduction.c
+    ${TFLE_SRC}/microfrontend/lib/window_util.c
+    ${TFLE_SRC}/microfrontend/lib/window.c
+    ${TFLE_SRC}/microfrontend/lib/log_scale_util.c
+    ${TFLE_SRC}/microfrontend/lib/log_scale.c
+    ${TFLE_SRC}/microfrontend/lib/log_lut.c
+    )
+
+FILE(GLOB TFL_EXP_CC_SRCS
+    ${TFL_SRC}/experimental/microfrontend/lib/fft_util.cc
+    ${TFL_SRC}/experimental/microfrontend/lib/fft.cc
+    )
+
 SET(TFL_SRCS 
     ${TFL_ROOT_SRCS}
     ${TFL_KERNELS_SRCS}
     ${TFL_CORE_API_SRCS}
     ${TFL_C_SRCS}
     ${TFL_MEM_PLANNER_SRCS}
+    ${TFL_EXP_C_SRCS}
+    ${TFL_EXP_CC_SRCS}
     )
 
 LIST(FILTER TFL_SRCS EXCLUDE REGEX "([a-z0-9_]+_test.cc)$")
