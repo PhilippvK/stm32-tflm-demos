@@ -20,8 +20,30 @@ set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS})
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
 
+# TODO: migrate to .cmake file and include CHECKS
+set(TFLM_BOARDS disco_f413zh disco_f746ng)
+set(TFLM_EXAMPLES hello_world micro_speech)
+set(TFLM_MODES interpreter compiler)
+set(TFLM_COMPILER_EXECUTABLE "/Users/Philipp/src/work/fp/git/tflite_micro_compiler_working/build/compiler") # TODO
+
 set(STM32_CHIP STM32F413ZHT6)
 set(STM_BOARD STM32F413H-Discovery)
+set(TFLM_BOARD disco_f413zh)
+set(TFLM_EXAMPLE micro_speech)
+#set(TFLM_EXAMPLE hello_world)
+set(TFLM_MODE compiler)
+#set(TFLM_MODE interpreter)
+add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
+set(TFLM_COMPILER_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}/")
+#if(TFLM_MODE EQUAL compiler)
+    add_definitions(-DTFLM_MODE_COMPILER)
+    #endif()
+
+# Enable Benchmarking (TODO)
+add_definitions(-DBENCHMARKING)
+
+# Disable MBED (TODO)
+add_definitions(-DNOMBED)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
@@ -58,6 +80,7 @@ FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio ili9325 stmpe811 st7789h2 ft6x06 w
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${PROJECT_SOURCE_DIR}/Inc"
+    "${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}"
     "${PROJECT_SOURCE_DIR}/Lib/kiss_fft"
     ${STM32HAL_INCLUDE_DIR}
     ${STM32LL_INCLUDE_DIR}
@@ -85,11 +108,18 @@ file(GLOB KISSFFT_SOURCES
 
 MESSAGE(STATUS "KISSFFT_SOURCES: ${KISSFFT_SOURCES}")
 
+file(GLOB_RECURSE EXAMPLE_SOURCES
+    "Src/${TFLM_EXAMPLE}/*.cc"
+    )
+
+MESSAGE(STATUS "EXAMPLE_SOURCES: ${EXAMPLE_SOURCES}")
+
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
+    ${EXAMPLE_SOURCES}
     ${KISSFFT_SOURCES}
     ${STM32HAL_SOURCES}
     ${STM32BSP_SOURCES}
