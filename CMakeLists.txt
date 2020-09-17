@@ -157,3 +157,13 @@ STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 
 # TODO: also clean .bin file on `make clean`
+
+ADD_CUSTOM_TARGET(
+    convert
+    COMMAND test ! -z $$FILE || (echo 'Please define .tflite file using `make convert FILE=...`' && false)
+    COMMAND test -f $$FILE || (echo 'File not found!' && false)
+    COMMAND test -f ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc && cp ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc.old || :
+    COMMAND test -f ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h && cp ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h.old || :
+    COMMAND ${TFLM_COMPILER_EXECUTABLE} $$FILE ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc ${TFLM_EXAMPLE}_
+    COMMAND mv ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc.h ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h
+    )
