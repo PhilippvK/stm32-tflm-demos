@@ -70,6 +70,10 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
 
   // Prune any earlier results that are too old for the averaging window.
   const int64_t time_limit = current_time_ms - average_window_duration_ms_;
+  /*TF_LITE_REPORT_ERROR(
+        error_reporter_,
+        "time_limit=%d",
+        time_limit);*/
   while ((!previous_results_.empty()) &&
          previous_results_.front().time_ < time_limit) {
     previous_results_.pop_front();
@@ -80,6 +84,10 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   const int64_t how_many_results = previous_results_.size();
   const int64_t earliest_time = previous_results_.front().time_;
   const int64_t samples_duration = current_time_ms - earliest_time;
+  /*TF_LITE_REPORT_ERROR(
+        error_reporter_,
+        "how_many_results=%d earliest_time=%d samples_duration=%d minimum_count_=%d",
+        how_many_results, earliest_time, samples_duration, minimum_count_);*/
   if ((how_many_results < minimum_count_) ||
       (samples_duration < (average_window_duration_ms_ / 4))) {
     *found_command = previous_top_label_;
@@ -105,6 +113,14 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   for (int i = 0; i < kCategoryCount; ++i) {
     average_scores[i] /= how_many_results;
   }
+/*  TF_LITE_REPORT_ERROR(
+        error_reporter_,
+        "average_scores[0]=%d average_scores[1]=%d average_scores[2]=%d average_scores[3]=%d",
+        average_scores[0], average_scores[1], average_scores[2], average_scores[3]);*/
+  TF_LITE_REPORT_ERROR(
+        error_reporter_,
+        "scores[0]=%d scores[1]=%d scores[2]=%d scores[3]=%d",
+        previous_results_.from_front(0).scores[0], previous_results_.from_front(0).scores[1], previous_results_.from_front(0).scores[2], previous_results_.from_front(0).scores[3]);
 
   // Find the current highest scoring category.
   int current_top_index = 0;
@@ -116,6 +132,10 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
     }
   }
   const char* current_top_label = kCategoryLabels[current_top_index];
+  /*TF_LITE_REPORT_ERROR(
+        error_reporter_,
+        "current_top_index=%d current_top_label=%s current_top_score=%d",
+        current_top_index, current_top_label, current_top_score);*/
 
   // If we've recently had another label trigger, assume one that occurs too
   // soon afterwards is a bad result.

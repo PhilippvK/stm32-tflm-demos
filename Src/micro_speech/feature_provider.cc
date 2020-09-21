@@ -75,9 +75,9 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
   // +-----------+   --        +-----------+
   // | data@80ms | --          |  <empty>  |
   // +-----------+             +-----------+
-  TF_LITE_REPORT_ERROR(error_reporter,
+  /*TF_LITE_REPORT_ERROR(error_reporter,
                        "---\ncurrent_step=%d | slices_needed=%d | slices_to_keep=%d | slices_to_drop=%d",
-                       current_step, slices_needed, slices_to_keep, slices_to_drop);
+                       current_step, slices_needed, slices_to_keep, slices_to_drop);*/
   if (slices_to_keep > 0) {
     for (int dest_slice = 0; dest_slice < slices_to_keep; ++dest_slice) {
       int8_t* dest_slice_data =
