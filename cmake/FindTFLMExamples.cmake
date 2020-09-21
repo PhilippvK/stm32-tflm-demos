@@ -1,0 +1,64 @@
+set(TFLM_BOARDS
+    disco_f413zh
+    disco_f746ng
+)
+set(TFLM_EXAMPLES
+    hello_world
+    micro_speech
+)
+
+set(TFLM_COMMON_HEADERS
+    main_functions.h
+)
+list(LENGTH TFLM_BOARD TFLM_BOARD_COUNT)
+IF(${TFLM_BOARD_COUNT} EQUAL 1)
+  list(FIND TFLM_BOARDS ${TFLM_BOARD} TFLM_BOARD_INDEX)
+  IF(${TFLM_BOARD_INDEX} LESS 0)
+	  MESSAGE(FATAL_ERROR "Unknown TFLM board: ${TFLM_BOARD}. Available boards: ${TFLM_BOARDS}")
+  ELSE()
+    MESSAGE("TFLM Board: ${TFLM_BOARD}")
+  ENDIF()
+ELSE()
+ MESSAGE(FATAL_ERROR "Please use TFLM_BOARD to specify exactly one of the following supported boards: ${TFLM_BOARDS}")
+ENDIF()
+
+IF(NOT TFLMExamples_FIND_COMPONENTS)
+  MESSAGE(FATAL_ERROR "No TFLMExamples component selected, chose one of: ${TFLM_EXAMPLES}")
+ENDIF()
+list(LENGTH TFLMExamples_FIND_COMPONENTS TFLM_EXAMPLE_COUNT)
+IF(${TFLM_EXAMPLE_COUNT} EQUAL 1)
+  set(TFLM_EXAMPLE ${TFLMExamples_FIND_COMPONENTS})
+  list(FIND TFLM_EXAMPLES ${TFLM_EXAMPLE} TFLM_EXAMPLE_INDEX)
+  IF(${TFLM_EXAMPLE_INDEX} LESS 0)
+    MESSAGE(FATAL_ERROR "Unknown TFLM Example: ${TFLM_EXAMPLE}. Available examples: ${TFLM_EXAMPLES}")
+  ELSE()
+    MESSAGE("TFLM Example: ${TFLM_EXAMPLE}")
+  ENDIF()
+ELSE()
+  FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
+  MESSAGE(FATAL_ERROR "Please use TFLM_EXAMPLE to specify exactly one of the following supported examples: ${TFLM_EXAMPLES}")
+ENDIF()
+
+FIND_PATH(TFLM_EXAMPLE_DIR ${TFLM_COMMON_HEADERS}
+  HINTS ${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}
+	CMAKE_FIND_ROOT_PATH_BOTH
+	)
+
+file(GLOB_RECURSE EXAMPLE_SOURCES
+  "${TFLM_EXAMPLE_DIR}/*.cc"
+  )
+
+set(TFLMExamples_INCLUDE_DIR
+  ${TFLM_EXAMPLE_DIR}
+  )
+
+set(TFLMExamples_SOURCES
+  ${EXAMPLE_SOURCES}
+  )
+
+message(STATUS "TFLMExamples Sources: ${TFLMExamples_SOURCES}")
+MESSAGE(STATUS "TFLMExamples Include Dirs: ${TFLMExamples_INCLUDE_DIR}")
+
+INCLUDE(FindPackageHandleStandardArgs)
+
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(TFLMExamples DEFAULT_MSG TFLMExamples_INCLUDE_DIR TFLMExamples_SOURCES)
