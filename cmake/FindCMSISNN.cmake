@@ -26,19 +26,78 @@ SET(CMSIS_NN_HEADERS
     arm_nnfunctions.h
     arm_nnsupportfunctions.h
     arm_nn_tables.h
+    arm_nn_types.h
     )
 
 SET(CMSIS_NN_SRCS
-    arm_relu_q7.c
+    arm_elementwise_mul_s8.c
+    arm_elementwise_add_s8.c
+    arm_fully_connected_q7_opt.c
+    arm_fully_connected_s8.c
+    arm_fully_connected_q15_opt.c
+    arm_fully_connected_q15.c
+    arm_fully_connected_mat_q7_vec_q15.c
     arm_fully_connected_q7.c
-    arm_softmax_q7.c
-    arm_q7_to_q15_reordered_no_shift.c
-    arm_convolve_HWC_q7_basic_nonsquare.c
-    arm_q7_to_q15_no_shift.c
-    arm_nn_mat_mult_kernel_q7_q15.c
-    arm_depthwise_separable_conv_HWC_q7_nonsquare.c
-    arm_convolve_1x1_HWC_q7_fast_nonsquare.c
+    arm_fully_connected_mat_q7_vec_q15_opt.c
+    arm_concatenation_s8_z.c
+    arm_concatenation_s8_x.c
+    arm_concatenation_s8_w.c
+    arm_concatenation_s8_y.c
+    arm_nn_depthwise_conv_s8_core.c
+    arm_depthwise_conv_u8_basic_ver1.c
+    arm_convolve_s8.c
+    arm_convolve_1x1_s8_fast.c
+    arm_convolve_HWC_q7_fast.c
     arm_nn_mat_mult_kernel_q7_q15_reordered.c
+    arm_nn_mat_mult_kernel_q7_q15.c
+    arm_convolve_HWC_q7_RGB.c
+    arm_nn_mat_mult_s8.c
+    arm_convolve_1x1_HWC_q7_fast_nonsquare.c
+    arm_convolve_HWC_q7_basic.c
+    arm_depthwise_separable_conv_HWC_q7_nonsquare.c
+    arm_convolve_HWC_q15_fast_nonsquare.c
+    arm_depthwise_conv_s8_opt.c
+    arm_depthwise_conv_3x3_s8.c
+    arm_nn_mat_mult_kernel_s8_s16.c
+    arm_convolve_HWC_q15_basic.c
+    arm_convolve_HWC_q15_fast.c
+    arm_convolve_HWC_q7_fast_nonsquare.c
+    arm_nn_mat_mult_kernel_s8_s16_reordered.c
+    arm_depthwise_separable_conv_HWC_q7.c
+    arm_depthwise_conv_s8.c
+    arm_convolve_1_x_n_s8.c
+    arm_convolve_HWC_q7_basic_nonsquare.c
+    arm_convolve_wrapper_s8.c
+    arm_depthwise_conv_wrapper_s8.c
+    arm_pool_q7_HWC.c
+    arm_avgpool_s8.c
+    arm_max_pool_s8.c
+    arm_relu_q15.c
+    arm_relu_q7.c
+    arm_nn_activations_q7.c
+    arm_relu6_s8.c
+    arm_nn_activations_q15.c
+    arm_nn_add_q7.c
+    arm_nn_depthwise_conv_nt_t_padded_s8.c
+    arm_q7_to_q15_reordered_no_shift.c
+    arm_nn_depthwise_conv_nt_t_s8.c
+    arm_nntables.c
+    arm_nn_accumulate_q7_to_q15.c
+    arm_nn_mult_q7.c
+    arm_nn_mult_q15.c
+    arm_q7_to_q15_reordered_with_offset.c
+    arm_q7_to_q15_with_offset.c
+    arm_nn_mat_mul_core_4x_s8.c
+    arm_nn_mat_mult_nt_t_s8.c
+    arm_nn_vec_mat_mult_t_s8.c
+    arm_nn_mat_mul_core_1x_s8.c
+    arm_q7_to_q15_no_shift.c
+    arm_softmax_s8.c
+    arm_softmax_q15.c
+    arm_softmax_u8.c
+    arm_softmax_q7.c
+    arm_softmax_with_batch_q7.c
+    arm_reshape_s8.c
     )
 
 FIND_PATH(CMSIS_NN_INC_DIR ${CMSIS_NN_HEADERS}
@@ -49,10 +108,7 @@ FIND_PATH(CMSIS_NN_INC_DIR ${CMSIS_NN_HEADERS}
 SET(CMSIS_DSP_HEADERS
     arm_common_tables.h
     arm_const_structs.h
-    # arm_helium_utils.h
     arm_math.h
-    # arm_mve_tables.h
-    # arm_vec_math.h
     )
 
 SET(CMSIS_DSP_PRIVATE_HEADERS
@@ -102,12 +158,15 @@ FOREACH(SRC ${CMSIS_NN_SRCS})
     SET(CMSIS_NN_${SRC_CLEAN}_FILE ${SRC_CLEAN}-NOTFOUND)
     FIND_FILE(CMSIS_NN_${SRC_CLEAN}_FILE ${SRC}
         PATH_SUFFIXES
+        BasicMathFunctions
         ActivationFunctions
         ConvolutionFunctions
         FullyConnectedFunctions
+        ConcatenationFunctions
         NNSupportFunctions
         PoolingFunctions
         SoftmaxFunctions
+        ReshapeFunctions
         PATHS ${ARM_CMSIS_DIR}/NN/Source
         CMAKE_FIND_ROOT_PATH_BOTH
         )

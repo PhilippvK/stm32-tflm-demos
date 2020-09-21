@@ -11,7 +11,7 @@ IF(NOT TF_SRC)
     IF(TF_TAG)
         MESSAGE(STATUS "Getting TF tag '${TF_TAG}' and not master")
         FetchContent_Declare(
-            tf 
+            tf
             GIT_REPOSITORY https://github.com/tensorflow/tensorflow.git
             GIT_PROGRESS FALSE
             GIT_REMOTE_UPDATE_STRATEGY REBASE_CHECKOUT
@@ -30,7 +30,7 @@ IF(NOT TF_SRC)
             )
     ELSE()
         FetchContent_Declare(
-            tf 
+            tf
             GIT_REPOSITORY https://github.com/tensorflow/tensorflow.git
             GIT_PROGRESS FALSE
             GIT_REMOTE_UPDATE_STRATEGY REBASE_CHECKOUT
@@ -45,9 +45,9 @@ IF(NOT TF_SRC)
     SET(TF_SRC ${tf_SOURCE_DIR})
 
     FetchContent_Declare(
-        flatbuffers 
-        GIT_REPOSITORY https://github.com/google/flatbuffers.git 
-        GIT_PROGRESS FALSE 
+        flatbuffers
+        GIT_REPOSITORY https://github.com/google/flatbuffers.git
+        GIT_PROGRESS FALSE
         QUIET
         )
     FetchContent_GetProperties(flatbuffers)
@@ -58,10 +58,10 @@ IF(NOT TF_SRC)
     LIST(APPEND TFL_INC_DIRS ${flatbuffers_SOURCE_DIR}/include)
 
     FetchContent_Declare(
-        fixedpoint 
-        GIT_REPOSITORY https://github.com/google/gemmlowp.git 
-        GIT_PROGRESS FALSE 
-        QUIET 
+        fixedpoint
+        GIT_REPOSITORY https://github.com/google/gemmlowp.git
+        GIT_PROGRESS FALSE
+        QUIET
         )
     FetchContent_GetProperties(fixedpoint)
     IF(NOT fixedpoint_POPULATED)
@@ -71,10 +71,10 @@ IF(NOT TF_SRC)
     LIST(APPEND TFL_INC_DIRS ${fixedpoint_SOURCE_DIR})
 
     FetchContent_Declare(
-        ruy 
-        GIT_REPOSITORY https://github.com/google/ruy.git 
-        GIT_PROGRESS FALSE 
-        QUIET 
+        ruy
+        GIT_REPOSITORY https://github.com/google/ruy.git
+        GIT_PROGRESS FALSE
+        QUIET
         )
     FetchContent_GetProperties(ruy)
     IF(NOT ruy_POPULATED)
@@ -97,22 +97,32 @@ IF(EXISTS ${TFLD_SRC}/gemmlowp)
     LIST(APPEND ${TFLD_SRC}/gemmlowp)
 ENDIF()
 
-LIST(APPEND TFL_INC_DIRS 
+LIST(APPEND TFL_INC_DIRS
     ${TF_SRC}
     )
 
 FILE(GLOB TFL_ROOT_SRCS
-    ${TFLM_SRC}/*.cc 
+    ${TFLM_SRC}/*.cc
     )
 
 FILE(GLOB TFL_KERNELS_SRCS
-    ${TFLM_SRC}/kernels/*.cc 
-    ${TFL_SRC}/kernels/internal/quantization_util.cc 
+    ${TFLM_SRC}/kernels/*.cc
+    ${TFLM_SRC}/kernels/cmsis-nn/*.cc
+    ${TFL_SRC}/kernels/internal/quantization_util.cc
     ${TFL_SRC}/kernels/kernel_util.cc
     )
 
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/conv.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/add.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/fully_connected.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/depthwise_conv.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/pooling.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/mul.cc")
+list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/softmax.cc")
+
+
 FILE(GLOB TFL_CORE_API_SRCS
-    ${TFL_SRC}/core/api/*.cc 
+    ${TFL_SRC}/core/api/*.cc
     )
 
 FILE(GLOB TFL_C_SRCS
@@ -144,7 +154,7 @@ FILE(GLOB TFL_EXP_CC_SRCS
     ${TFL_SRC}/experimental/microfrontend/lib/fft.cc
     )
 
-SET(TFL_SRCS 
+SET(TFL_SRCS
     ${TFL_ROOT_SRCS}
     ${TFL_KERNELS_SRCS}
     ${TFL_CORE_API_SRCS}
@@ -180,11 +190,11 @@ IF(NOT SKIP_TF_LIB)
     )
 ENDIF()
 
-SET(TFLite_INCLUDE_DIRS 
+SET(TFLite_INCLUDE_DIRS
     ${TFL_INC_DIRS}
     )
 
-SET(TFLite_SOURCES 
+SET(TFLite_SOURCES
     ${TFL_SRCS}
     )
 
