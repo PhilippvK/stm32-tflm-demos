@@ -29,7 +29,7 @@ void RespondToCommand(tflite::ErrorReporter *error_reporter,
                       uint8_t score, bool is_new_command) {
   // Do this only once
   if (!initialized) {
-    BSP_LCD_Init();
+    //BSP_LCD_Init();
     // Set the background and foreground colors
     //BSP_LCD_Clear(LCD_COLOR_WHITE);
     initialized = true;
