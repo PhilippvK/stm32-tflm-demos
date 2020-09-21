@@ -107,18 +107,30 @@ FILE(GLOB TFL_ROOT_SRCS
 
 FILE(GLOB TFL_KERNELS_SRCS
     ${TFLM_SRC}/kernels/*.cc
-    ${TFLM_SRC}/kernels/cmsis-nn/*.cc
     ${TFL_SRC}/kernels/internal/quantization_util.cc
     ${TFL_SRC}/kernels/kernel_util.cc
     )
 
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/conv.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/add.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/fully_connected.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/depthwise_conv.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/pooling.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/mul.cc")
-list(REMOVE_ITEM TFL_KERNELS_SRCS "${TFLM_SRC}/kernels/softmax.cc")
+IF(TFLM_USE_CMSIS_NN)
+
+  FILE(GLOB TFL_KERNELS_CMSISNN_SRCS
+      ${TFLM_SRC}/kernels/cmsis-nn/*.cc
+      )
+
+  FOREACH(src ${TFL_KERNELS_CMSISNN_SRCS})
+    GET_FILENAME_COMPONENT(src_name ${src} NAME)
+    SET(src_path "${TFLM_SRC}/kernels/${src_name}")
+	  LIST(FIND TFL_KERNELS_SRCS ${src_path} TFL_KERNELS_SRCS_FOUND_INDEX)
+    IF(${TFL_KERNELS_SRCS_FOUND_INDEX} GREATER_EQUAL 0)
+      MESSAGE(STATUS "Replacing TFLM version of ${src_name} by CMSIS-NN variant...")
+      LIST(REMOVE_ITEM TFL_KERNELS_SRCS ${src_path})
+	    LIST(APPEND TFL_KERNELS_SRCS ${src})
+    ENDIF()
+  ENDFOREACH()
+
+ENDIF()
+
+MESSAGE(STATUS "TFL_KERNELS_SRCS: ${TFL_KERNELS_SRCS}")
 
 
 FILE(GLOB TFL_CORE_API_SRCS
