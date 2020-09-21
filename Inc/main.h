@@ -37,6 +37,9 @@ extern "C" {
 #include "stm32f413h_discovery_ts.h"
 #include "stm32f413h_discovery_audio.h"
 #include "ts_calibration.h"
+// TODO: temp
+#include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -55,6 +58,7 @@ extern "C" {
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
+int __io_putchar(int ch);
 void Error_Handler(void);
 uint8_t CheckForUserInput(void);
 

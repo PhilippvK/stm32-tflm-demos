@@ -78,6 +78,7 @@ set(TFLM_COMPILER_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}/")
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${PROJECT_SOURCE_DIR}/Inc"
+    "${PROJECT_SOURCE_DIR}/Inc/tests"
     "${PROJECT_SOURCE_DIR}/Lib/kiss_fft"
     ${TFLMExamples_INCLUDE_DIR}
     ${STM32HAL_INCLUDE_DIR}
@@ -93,11 +94,17 @@ file(GLOB PROJECT_SOURCES
     "Src/*.c"
     "Src/*.cc"
     "Src/*.cpp"
-    "Lib/kiss_fft/*.c"
-    "Lib/kiss_fft/tools/kiss_fftr.c"
     )
 
 MESSAGE(STATUS "PROJECT_SOURCES: ${PROJECT_SOURCES}")
+
+file(GLOB TEST_SOURCES
+    "Src/tests/*.c"
+    "Src/tests/*.cc"
+    "Src/tests/*.cpp"
+    )
+
+  MESSAGE(STATUS "TEST_SOURCES: ${TEST_SOURCES}")
 
 file(GLOB KISSFFT_SOURCES
     "Lib/kiss_fft/*.c"
@@ -111,6 +118,7 @@ SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
+    ${TEST_SOURCES}
     ${TFLMExamples_SOURCES}
     ${KISSFFT_SOURCES}
     ${STM32HAL_SOURCES}
