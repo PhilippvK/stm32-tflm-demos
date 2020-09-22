@@ -128,9 +128,11 @@ IF(TFLM_USE_CMSIS_NN)
     ENDIF()
   ENDFOREACH()
 
+  MESSAGE(STATUS "Patching cmsis-nn kernels...")
+  EXECUTE_PROCESS(COMMAND bash "-c" "find ${TFLM_SRC}/kernels/cmsis-nn -iname '*.cc' | xargs sed -i -E $'s@cmsis/CMSIS/NN/Include/@@g'")
+
 ENDIF()
 
-MESSAGE(STATUS "TFL_KERNELS_SRCS: ${TFL_KERNELS_SRCS}")
 
 
 FILE(GLOB TFL_CORE_API_SRCS
