@@ -40,6 +40,10 @@ extern "C" {
 // TODO: temp
 #include <stdlib.h>
 #include <stdio.h>
+/* FatFs includes component */
+#include "ff_gen_drv.h"
+#include "sd_diskio.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -294,6 +298,19 @@ uint8_t CheckForUserInput(void);
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
+typedef enum {
+  AUDIO_ERROR_NONE = 0,
+  AUDIO_ERROR_NOTREADY,
+  AUDIO_ERROR_IO,
+  AUDIO_ERROR_EOF,
+}AUDIO_ErrorTypeDef;
+void AudioPlay_demo (void);
+uint8_t AUDIO_Process(void);
+void AudioInit(void);
+void AudioDeinit(void);
+void AudioPlay(uint8_t* data, uint32_t size);
+void AudioLoop(void);
+void AudioSamples(uint8_t* buf);
 
 #ifdef __cplusplus
 }

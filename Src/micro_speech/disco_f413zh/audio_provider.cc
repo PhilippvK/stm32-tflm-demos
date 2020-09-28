@@ -21,6 +21,8 @@ limitations under the License.
 #include "micro_features/micro_model_settings.h"
 #include <string.h>
 
+#include "main.h"
+
 namespace {
 
 bool g_is_audio_initialized = false;
@@ -58,6 +60,7 @@ int32_t Scratch [SCRATCH_BUFF_SIZE] __attribute__((section(".scratch_section")))
 #endif
 
 TfLiteStatus InitAudioRecording(tflite::ErrorReporter* error_reporter) {
+#ifndef FAKE_MIC
   BSP_LED_Init((Led_TypeDef)0);
   BSP_LED_Init((Led_TypeDef)1);
   BSP_LED_On((Led_TypeDef)0);
@@ -87,6 +90,7 @@ TfLiteStatus InitAudioRecording(tflite::ErrorReporter* error_reporter) {
   // Also play results out to headphone jack.
   BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 50, I2S_AUDIOFREQ_16K);
   BSP_AUDIO_OUT_Play((uint16_t*)AUDIO_BUFFER_OUT, AUDIO_BLOCK_SIZE * 2);
+#endif
 
   return kTfLiteOk;
 }
@@ -160,6 +164,12 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(void) {
       reinterpret_cast<int16_t*>(AUDIO_BUFFER_IN + AUDIO_BLOCK_SIZE));
   return;
 }
+
+// TODO
+void AudioSamples(uint8_t* buf) {
+  CaptureSamples(reinterpret_cast<int16_t*>(buf));
+}
+
 
 /**
   * @brief  Audio IN Error callback function.

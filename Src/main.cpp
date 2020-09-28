@@ -14,11 +14,12 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+#include "sdcard.h"
 
 
 /* TFLM Includes ------------------------------------------------------------------*/
-//#include "main_functions.h"
-#include "test_micro_speech.h"
+#include "main_functions.h"
+//#include "test_micro_speech.h"
 
 /* Private includes ----------------------------------------------------------*/
 #include <string.h>
@@ -38,6 +39,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 //TS_StateTypeDef TS_State;
+char* filenames[MAX_FILES];
+FSIZE_t filesizes[MAX_FILES];
+uint8_t* data;
+
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -46,6 +51,15 @@ static void BSP_Welcome(void);
 
 /* Private user code ---------------------------------------------------------*/
 
+void displayFileName(char* name) {
+  char str[64];
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+  sprintf(str, "<%s>", name);
+  BSP_LCD_DisplayStringAt(0, 256-50, (uint8_t *)str, CENTER_MODE);
+}
+
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -53,6 +67,12 @@ static void BSP_Welcome(void);
 int main(void)
 {
   /* Local Variables */
+  const uint32_t tick_limit = 5000;
+  uint32_t last_ticks = 0;
+  uint32_t file_index = 0;
+  uint32_t file_count;
+  uint32_t res;
+
 #ifdef BENCHMARKING
   int divider = 0;
 #endif /* BENCHMARKING */
@@ -72,16 +92,47 @@ int main(void)
 
   /* Show Welcome Screen */
   BSP_Welcome();
-
+  file_count = get_wav_files("micro_speech", filenames, filesizes);
+  if (file_count > 0) {
+    data = get_wav_data("micro_speech", filenames[0], filesizes[0]);
+    if (data) {
+      AudioInit();
+      displayFileName(filenames[0]);
+      AudioPlay(data, filesizes[0]);
+      last_ticks = HAL_GetTick();
+    } else {
+      Error_Handler();
+    }
+  } else {
+    Error_Handler();
+  }
+  
   /* Infinite loop */
   fprintf(stderr, "--- TFLM Demo for STM32 Boards ---\n\r");
-  //setup();
-  test_setup();
+  setup();
+  //test_setup();
   fprintf(stderr, "Setup done! Main loop starts now!\n\r");
   while (true) {
-    //loop();
-    test_loop();
-    HAL_Delay(1000);
+    //AudioLoop();
+    loop();
+    uint32_t cur_ticks = HAL_GetTick();
+    if (cur_ticks-last_ticks > tick_limit) {
+      last_ticks = cur_ticks;
+      file_index = (file_index + 1) % file_count;
+      AudioDeinit();
+      AudioInit();
+      free(data);
+      data = get_wav_data("micro_speech", filenames[file_index], filesizes[file_index]);
+      if (data) {
+        HAL_Delay(50);
+        displayFileName(filenames[file_index]);
+        AudioPlay(data, filesizes[file_index]);
+      } else {
+        Error_Handler();
+      }
+    }
+    //test_loop();
+    //HAL_Delay(1000);
 #ifdef BENCHMARKING
     if (divider % 10 == 0) {
 //print_summary(TICKS_POPULATE|TICKS_INVOKE|TICKS_RESPOND);
