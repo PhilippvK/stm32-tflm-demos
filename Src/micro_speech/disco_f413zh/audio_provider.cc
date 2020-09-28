@@ -91,6 +91,33 @@ TfLiteStatus InitAudioRecording(tflite::ErrorReporter* error_reporter) {
   return kTfLiteOk;
 }
 
+// TODO
+void plot_wave(int16_t* samples, int size) {
+  static int *audio_plot_buffer;
+
+  if (!audio_plot_buffer) {
+    audio_plot_buffer = new int[BSP_LCD_GetXSize()];
+  }
+
+  int stride = size/BSP_LCD_GetXSize();
+  int y_center = BSP_LCD_GetYSize()/6;
+  int audio_magnitude = y_center;
+  BSP_LCD_FillRect(0,0,BSP_LCD_GetXSize(),BSP_LCD_GetYSize()/3);
+  for(uint32_t i=0;i<BSP_LCD_GetXSize();i++)
+  {
+    audio_magnitude = y_center + (int)(samples[16000*(kFeatureSliceDurationMs-kFeatureSliceStrideMs)/1000+i*stride]>>9);
+    if (audio_magnitude < 0)
+      audio_magnitude = 0;
+    if (audio_magnitude > 2*y_center)
+      audio_magnitude = 2*y_center - 1;
+    audio_plot_buffer[i] = audio_magnitude;
+  }
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  for(uint32_t i=0;i<BSP_LCD_GetXSize()-1;i++)
+    BSP_LCD_DrawLine(i,audio_plot_buffer[i],i+1,audio_plot_buffer[i+1]);
+  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+}
+
 void CaptureSamples(const int16_t* sample_data) {
   const int sample_size = AUDIO_BLOCK_SIZE / (sizeof(int16_t) * 2);
   const int32_t time_in_ms =
@@ -105,6 +132,7 @@ void CaptureSamples(const int16_t* sample_data) {
     g_audio_capture_buffer[capture_index] =
         (sample_data[(i * 2) + 0] / 2) + (sample_data[(i * 2) + 1] / 2);
   }
+  //plot_wave(sample_data_mono, sample_size);
   // This is how we let the outside world know that new audio data has arrived.
   g_latest_audio_timestamp = time_in_ms;
 }
