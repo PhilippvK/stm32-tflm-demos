@@ -18,8 +18,8 @@
 
 
 /* TFLM Includes ------------------------------------------------------------------*/
-#include "main_functions.h"
-//#include "test_micro_speech.h"
+//#include "main_functions.h"
+#include "test_micro_speech.h"
 
 /* Private includes ----------------------------------------------------------*/
 #include <string.h>
@@ -92,7 +92,7 @@ int main(void)
 
   /* Show Welcome Screen */
   BSP_Welcome();
-  file_count = get_wav_files("micro_speech", filenames, filesizes);
+  /*file_count = get_wav_files("micro_speech", filenames, filesizes);
   if (file_count > 0) {
     data = get_wav_data("micro_speech", filenames[0], filesizes[0]);
     if (data) {
@@ -105,17 +105,16 @@ int main(void)
     }
   } else {
     Error_Handler();
-  }
+  }*/
   
   /* Infinite loop */
   fprintf(stderr, "--- TFLM Demo for STM32 Boards ---\n\r");
-  setup();
-  //test_setup();
+  //setup();
+  test_setup();
   fprintf(stderr, "Setup done! Main loop starts now!\n\r");
   while (true) {
-    //AudioLoop();
-    loop();
-    uint32_t cur_ticks = HAL_GetTick();
+    //loop();
+    /*uint32_t cur_ticks = HAL_GetTick();
     if (cur_ticks-last_ticks > tick_limit) {
       last_ticks = cur_ticks;
       file_index = (file_index + 1) % file_count;
@@ -130,9 +129,9 @@ int main(void)
       } else {
         Error_Handler();
       }
-    }
-    //test_loop();
-    //HAL_Delay(1000);
+    }*/
+    test_loop();
+    HAL_Delay(1000);
 #ifdef BENCHMARKING
     if (divider % 10 == 0) {
 //print_summary(TICKS_POPULATE|TICKS_INVOKE|TICKS_RESPOND);

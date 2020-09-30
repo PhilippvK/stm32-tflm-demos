@@ -21,6 +21,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/yes_micro_features_data.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/no_micro_features_data.h"
+#include "silence_micro_features_data.h"
 #include "tensorflow/lite/micro/examples/micro_speech/recognize_commands.h"
 #ifdef TFLM_MODE_COMPILER
 #include "offline_model.h"
@@ -176,16 +177,22 @@ void test_loop() {
   //}
 
   // Copy feature buffer to input tensor
+#ifdef TFLM_MODE_COMPILER
+  for (unsigned int i = 0; i < micro_speech_input(0)->bytes; i++) {
+#else
   for (unsigned int i = 0; i < model_input->bytes; i++) {
+#endif /* TFLM_MODE_COMPILER */
     if (input_index == 0) {
       model_input_buffer[i] = g_yes_micro_f2e59fea_nohash_1_data[i];
     } else if (input_index == 1) {
       model_input_buffer[i] = g_no_micro_f9643d42_nohash_4_data[i];
+    } else if (input_index == 2) {
+      model_input_buffer[i] = g_silence_micro_data[i];
     } else {
       // ERROR
     }
   }
-  input_index = (input_index + 1) % 2;
+  input_index = (input_index + 1) % 3;
 
   // Run the model on the spectrogram input and make sure it succeeds.
 #ifdef BENCHMARKING
