@@ -20,6 +20,10 @@ set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS})
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
+include(${CMAKE_TOOLCHAIN_FILE})
+
 set(TFLM_MODES interpreter compiler)
 set(TFLM_COMPILER_EXECUTABLE "/Users/Philipp/src/work/fp/git/tflite_micro_compiler_working/build/compiler") # TODO
 
@@ -58,9 +62,6 @@ add_definitions(-DNOMBED)
 ### Configure hello_world Example ###
 add_definitions(-DHELLO_WOLRD_DELAY_MS=100)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
-include(${CMAKE_TOOLCHAIN_FILE})
 ### Configure micro_speech Example ###
 #add_definitions(-DFAKE_MIC) # Enable Fake Microphone
 add_definitions(-DFIXED_POINT=16)
@@ -147,8 +148,6 @@ INCLUDE_DIRECTORIES(
     ${FATFS_INCLUDE_DIRS}
     )
 
-SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
-
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
@@ -163,6 +162,8 @@ ADD_EXECUTABLE(
     ${CMSISNN_SOURCES}
     ${FATFS_SOURCES}
     )
+
+SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
 TARGET_COMPILE_DEFINITIONS(${CMAKE_PROJECT_NAME}.elf PUBLIC STM_BSP)
 
