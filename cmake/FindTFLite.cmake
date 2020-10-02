@@ -82,6 +82,25 @@ IF(NOT TF_SRC)
         FetchContent_Populate(ruy)
     ENDIF()
     LIST(APPEND TFL_INC_DIRS ${ruy_SOURCE_DIR})
+
+    FetchContent_Declare(
+        kissfft
+        GIT_REPOSITORY https://github.com/mborgerding/kissfft.git
+        GIT_PROGRESS FALSE
+        GIT_TAG 36dbc057604f00aacfc0288ddad57e3b21cfc1b8
+        QUIET
+        )
+    FetchContent_GetProperties(kissfft)
+    IF(NOT kissfft_POPULATED)
+      MESSAGE(STATUS "Additionally get 'kissfft'...")
+        FetchContent_Populate(kissfft)
+    ENDIF()
+    file(GLOB KISSFFT_SOURCES
+      "${kissfft_SOURCE_DIR}/*.c"
+      "${kissfft_SOURCE_DIR}/tools/kiss_fftr.c"
+    )
+    LIST(APPEND KISSFFT_SRCS ${KISSFFT_SOURCES})
+    LIST(APPEND KISSFFT_INC_DIR ${kissfft_SOURCE_DIR})
 ENDIF()
 
 SET(TFL_SRC ${TF_SRC}/tensorflow/lite)
@@ -206,10 +225,12 @@ ENDIF()
 
 SET(TFLite_INCLUDE_DIRS
     ${TFL_INC_DIRS}
+    ${KISSFFT_INC_DIR}
     )
 
 SET(TFLite_SOURCES
     ${TFL_SRCS}
+    ${KISSFFT_SRCS}
     )
 
 INCLUDE(FindPackageHandleStandardArgs)
