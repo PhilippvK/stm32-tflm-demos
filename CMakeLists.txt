@@ -80,11 +80,25 @@ FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
 
 add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
 set(TFLM_COMPILER_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}/")
+# Setting up tests (optional)
+SET(TEST_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/Inc/tests")
+file(GLOB TEST_SOURCES
+    "${PROJECT_SOURCE_DIR}/Src/tests/*.c"
+    "${PROJECT_SOURCE_DIR}/Src/tests/*.cc"
+    "${PROJECT_SOURCE_DIR}/Src/tests/*.cpp"
+    )
+
+# Gather all project source files
+file(GLOB PROJECT_SOURCES
+    "Src/*.c"
+    "Src/*.cc"
+    "Src/*.cpp"
+    )
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${PROJECT_SOURCE_DIR}/Inc"
-    "${PROJECT_SOURCE_DIR}/Inc/tests"
+    ${TEST_INCLUDE_DIR}
     ${TFLMExamples_INCLUDE_DIR}
     ${STM32HAL_INCLUDE_DIR}
     ${STM32LL_INCLUDE_DIR}
@@ -96,21 +110,6 @@ INCLUDE_DIRECTORIES(
     ${FATFS_INCLUDE_DIRS}
     )
 
-file(GLOB PROJECT_SOURCES
-    "Src/*.c"
-    "Src/*.cc"
-    "Src/*.cpp"
-    )
-
-MESSAGE(STATUS "PROJECT_SOURCES: ${PROJECT_SOURCES}")
-
-file(GLOB TEST_SOURCES
-    "Src/tests/*.c"
-    "Src/tests/*.cc"
-    "Src/tests/*.cpp"
-    )
-
-  MESSAGE(STATUS "TEST_SOURCES: ${TEST_SOURCES}")
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
 ADD_EXECUTABLE(
