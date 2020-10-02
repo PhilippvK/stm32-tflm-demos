@@ -36,10 +36,12 @@ set(TFLM_BOARD disco_f769ni)
 ### Configure TFML Mode here ###
 #set(TFLM_MODE compiler)
 set(TFLM_MODE interpreter)
-#if(TFLM_MODE EQUAL compiler)
-#    add_definitions(-DTFLM_MODE_COMPILER)
-    #endif()
 
+# (TODO)
+if(${TFLM_MODE} STREQUAL compiler)
+  set(CMAKE_TFLM_COMPILER_FILE ${CMAKE_MODULE_PATH}/tflm_compiler.cmake)
+  include(${CMAKE_TFLM_COMPILER_FILE})
+endif()
 
 ### Enable/Disable usage of CMSISNN custom kernels ###
 SET(TFLM_USE_CMSIS_NN ON)
@@ -115,8 +117,6 @@ ENDIF()
 #FIND_PACKAGE(TFLMExamples COMPONENTS hello_world REQUIRED)
 FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
 
-add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
-set(TFLM_COMPILER_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}/")
 # Setting up tests (optional)
 SET(TEST_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/Inc/tests")
 file(GLOB TEST_SOURCES
@@ -195,13 +195,3 @@ STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 
 # TODO: also clean .bin file on `make clean`
-
-ADD_CUSTOM_TARGET(
-    convert
-    COMMAND test ! -z $$FILE || (echo 'Please define .tflite file using `make convert FILE=...`' && false)
-    COMMAND test -f $$FILE || (echo 'File not found!' && false)
-    COMMAND test -f ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc && cp ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc.old || :
-    COMMAND test -f ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h && cp ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h.old || :
-    COMMAND ${TFLM_COMPILER_EXECUTABLE} $$FILE ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc ${TFLM_EXAMPLE}_
-    COMMAND mv ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.cc.h ${TFLM_COMPILER_OUTPUT_DIRECTORY}/offline_model.h
-    )
