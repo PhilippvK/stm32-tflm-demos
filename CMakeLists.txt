@@ -23,59 +23,96 @@ SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-s
 set(TFLM_MODES interpreter compiler)
 set(TFLM_COMPILER_EXECUTABLE "/Users/Philipp/src/work/fp/git/tflite_micro_compiler_working/build/compiler") # TODO
 
-set(STM32_CHIP STM32F413ZHT6)
-set(STM_BOARD STM32F413H-Discovery)
+### Configure STM32 Board here ###
+#set(STM32_CHIP STM32F413ZHT6)
+set(STM32_CHIP STM32F769NIH6)
+#set(STM_BOARD STM32F413H-Discovery)
+set(STM_BOARD STM32F769I-Discovery)
 
-set(TFLM_BOARD disco_f413zh)
+### Configure TFML Board here ###
+#set(TFLM_BOARD disco_f413zh)
+set(TFLM_BOARD disco_f769ni)
+
+### Configure TFML Mode here ###
 #set(TFLM_MODE compiler)
 set(TFLM_MODE interpreter)
 #if(TFLM_MODE EQUAL compiler)
 #    add_definitions(-DTFLM_MODE_COMPILER)
     #endif()
 
-# Enable Benchmarking (TODO)
-add_definitions(-DBENCHMARKING)
 
-# Disable MBED (TODO)
+### Enable/Disable usage of CMSISNN custom kernels ###
+SET(TFLM_USE_CMSIS_NN ON)
+
+### Enable/Disable Benchmarking ###
+SET(ENABLE_BENCHMARKING ON)
+IF(${ENABLE_BENCHMARKING})
+  add_definitions(-DBENCHMARKING)
+ENDIF()
+
+# Disable MBED (Only valid for Tensorflow Toolchain)
 add_definitions(-DNOMBED)
 
-# Enable Fake Microphone
-add_definitions(-DFAKE_MIC)
+### Configure hello_world Example ###
+add_definitions(-DHELLO_WOLRD_DELAY_MS=100)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
+### Configure micro_speech Example ###
+#add_definitions(-DFAKE_MIC) # Enable Fake Microphone
+add_definitions(-DFIXED_POINT=16)
 
+### Edit User/Name for using a custom Repository ###
+SET(CUBE_REPO_USER "STMicroelectronics")
+#SET(CUBE_REPO_USER "alxhoff")
+SET(CUBE_REPO_NAME "STM32Cube${STM32_FAMILY}")
+#SET(CUBE_REPO_NAME "STM32F${CUBE_SERIES}-Cube-Firmware")
+
+# Fetching Cube Firmware Repository
 FIND_PACKAGE(Git REQUIRED)
-
-set(CUBE_SOURCE "${CMAKE_BINARY_DIR}/STM32F4-Cube-Firmware")
+set(CUBE_SOURCE "${CMAKE_BINARY_DIR}/STM32${STM32_FAMILY}-Cube-Firmware")
 if(EXISTS ${CUBE_SOURCE})
-    message("Cube FW directory exists")
+  message(STATUS "Cube FW directory exists")
 else()
-    message("Getting Cube Firmware")
-    set(GIT_REPOSITORY "https://github.com/alxhoff/STM32F4-Cube-Firmware.git")
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
+  message(STATUS "Getting Cube Firmware")
+    set(GIT_REPOSITORY "https://github.com/${CUBE_REPO_USER}/${CUBE_REPO_NAME}.git")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${CUBE_SOURCE})
 endif()
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
-SET(TFLM_USE_CMSIS_NN ON)
+# Prepare Tensorflow Lite (micro)
 FIND_PACKAGE(TFLite REQUIRED)
-
 SET(TFLITE_PLATFORM micro)
 
-set(STM32Cube_DIR ${CUBE_SOURCE})
-
+### Configure FreeRTOS (optional, not supported!)
 #SET(FREERTOS_HEAP_IMPL 1)
 #FIND_PACKAGE(FreeRTOS REQUIRED)
+
+### Configure SD/USB-Support ###
 SET(STORAGE_DRIVER "SDCARD")
 FIND_PACKAGE(FATFS REQUIRED)
 FIND_PACKAGE(USBHost COMPONENTS MSC REQUIRED)
 
+### Configure CMSIS(-NN) ##
 FIND_PACKAGE(CMSIS REQUIRED)
+IF(${TFLM_USE_CMSIS_NN})
 FIND_PACKAGE(CMSISNN REQUIRED)
-FIND_PACKAGE(STM32HAL COMPONENTS sram gpio uart fmpi2c i2s dac adc dfsdm sd dma qspi REQUIRED)
-FIND_PACKAGE(STM32LL COMPONENTS fsmc sdmmc REQUIRED)
-FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio ili9325 stmpe811 st7789h2 ft6x06 wm8994 psram sd REQUIRED)
+ENDIF()
+
+### Configure STM32 HAL/BSP/LL ###
+IF(${TFLM_BOARD} STREQUAL "disco_f413zh")
+  FIND_PACKAGE(STM32HAL COMPONENTS sram gpio uart fmpi2c i2s dac adc dfsdm sd dma qspi REQUIRED)
+  FIND_PACKAGE(STM32LL COMPONENTS fsmc sdmmc REQUIRED)
+  FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio ili9325 stmpe811 st7789h2 ft6x06 wm8994 psram sd REQUIRED)
+ELSEIF(${TFLM_BOARD} STREQUAL "disco_f769ni")
+  FIND_PACKAGE(STM32HAL COMPONENTS sram gpio uart i2s dac adc dfsdm sd dma dma2d qspi dsi ltdc sdram sai i2c REQUIRED)
+  FIND_PACKAGE(STM32LL COMPONENTS fmc REQUIRED)
+  FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio stmpe811 st7789h2 ft6x06 wm8994 sdram sd otm8009a REQUIRED)
+ENDIF()
+
+### Comment in the target TFLM Example ###
+#FIND_PACKAGE(TFLMExamples COMPONENTS hello_world REQUIRED)
 FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
 
 add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
@@ -137,7 +174,11 @@ ADD_CUSTOM_TARGET(
 
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
 
-set(OPENOCD_BOARD "board/st_nucleo_f4.cfg")
+IF(${STM_BOARD} STREQUAL "STM32F413H-Discovery")
+  set(OPENOCD_BOARD "board/st_nucleo_f4.cfg")
+ELSEIF(${STM_BOARD} STREQUAL "STM32F769I-Discovery")
+  set(OPENOCD_BOARD "board/stm32f7discovery.cfg")
+ENDIF()
 
 ADD_CUSTOM_TARGET(
     debug

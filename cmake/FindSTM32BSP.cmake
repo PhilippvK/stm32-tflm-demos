@@ -60,6 +60,22 @@ IF(STM32_FAMILY STREQUAL "F4")
             ft6x06
 			      )
 ENDIF()
+# TODO: use else-if
+IF(STM32_FAMILY STREQUAL "F7")
+	IF(STM_BOARD STREQUAL "STM32F769I-Discovery")
+		SET(BSP_COMPONENTS
+      audio eeprom lcd qspi sd sdram ts
+        )
+		SET(BSP_PREFIX stm32f769i_discovery_)
+		SET(BSP_HEADERS stm32f769i_discovery.h)
+		SET(BSP_SRC stm32f769i_discovery.c)
+	ENDIF()
+	set(COMMON_COMPONENTS
+    adv7533 ampire480272 ampire640480 exc7200 ft6x06 ft5336 mfxstm32l152
+    mx25l512 n25q128a n25q512a otm8009a ov5640 ov9655 rk043fn48h s5k5cag st7735
+    st7789h2 stmpe811 ts3510 wm8994
+			      )
+ENDIF()
 
 IF(NOT STM32BSP_FIND_COMPONENTS)
 	SET(STM32BSP_FIND_COMPONENTS ${BSP_COMPONENTS} ${COMMON_COMPONENTS})

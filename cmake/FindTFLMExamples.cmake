@@ -1,7 +1,9 @@
 set(TFLM_BOARDS
     disco_f413zh
     disco_f746ng
+    disco_f769ni
 )
+
 set(TFLM_EXAMPLES
     hello_world
     micro_speech
@@ -35,18 +37,38 @@ IF(${TFLM_EXAMPLE_COUNT} EQUAL 1)
     MESSAGE("TFLM Example: ${TFLM_EXAMPLE}")
   ENDIF()
 ELSE()
-  FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
+  #FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
   MESSAGE(FATAL_ERROR "Please use TFLM_EXAMPLE to specify exactly one of the following supported examples: ${TFLM_EXAMPLES}")
 ENDIF()
 
+UNSET(TFLM_EXAMPLE_DIR CACHE)
 FIND_PATH(TFLM_EXAMPLE_DIR ${TFLM_COMMON_HEADERS}
   HINTS ${PROJECT_SOURCE_DIR}/Src/${TFLM_EXAMPLE}
 	CMAKE_FIND_ROOT_PATH_BOTH
 	)
 
+message(STATUS "TFLM_EXAMPLE=${TFLM_EXAMPLE} TFLM_EXAMPLE_DIR=${TFLM_EXAMPLE_DIR}")
+
 file(GLOB_RECURSE EXAMPLE_SOURCES
   "${TFLM_EXAMPLE_DIR}/*.cc"
   )
+
+set(TFLM_BOARDS_TO_REMOVE
+)
+FOREACH(cmp ${TFLM_BOARDS})
+  IF(NOT (${cmp} STREQUAL ${TFLM_BOARD}))
+    LIST(APPEND TFLM_BOARDS_TO_REMOVE ${cmp})
+  ENDIF()
+ENDFOREACH() 
+
+FOREACH(path ${EXAMPLE_SOURCES})
+  FOREACH(cmp ${TFLM_BOARDS_TO_REMOVE})
+    STRING(FIND ${path} ${cmp} result)
+    IF(${result} GREATER 0)
+      LIST(REMOVE_ITEM EXAMPLE_SOURCES ${path})
+    ENDIF()
+  ENDFOREACH() 
+ENDFOREACH() 
 
 set(TFLMExamples_INCLUDE_DIR
   ${TFLM_EXAMPLE_DIR}
@@ -58,6 +80,8 @@ set(TFLMExamples_SOURCES
 
 message(STATUS "TFLMExamples Sources: ${TFLMExamples_SOURCES}")
 MESSAGE(STATUS "TFLMExamples Include Dirs: ${TFLMExamples_INCLUDE_DIR}")
+
+add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
 
 INCLUDE(FindPackageHandleStandardArgs)
 
