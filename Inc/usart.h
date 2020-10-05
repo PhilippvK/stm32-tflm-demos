@@ -26,19 +26,17 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+#ifdef STM32_BOARD_STM32F413H_DISCOVERY
 extern UART_HandleTypeDef huart6;
-
 void MX_USART6_UART_Init(void);
+#endif
+
+#ifdef STM32_BOARD_STM32F769I_DISCOVERY
+extern UART_HandleTypeDef huart1;
+void MX_USART1_UART_Init(void);
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 #endif /*__ usart_H */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
