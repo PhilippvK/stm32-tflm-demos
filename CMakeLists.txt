@@ -1,6 +1,7 @@
 # Fix For MACOS compability
 if (APPLE)
     set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+    SET(TOOLCHAIN_PREFIX "/usr/local") # Set depending on System (f.e. Homebrew)
 endif()
 
 PROJECT(STM32F413H-Discovery-TensorFlow-Demo LANGUAGES C CXX)
@@ -12,7 +13,6 @@ ENABLE_LANGUAGE(ASM)
 
 SET(TARGET stm32f4HAL)
 ADD_DEFINITIONS(-DDEBUG_UART_HANDLE=UartHandle)
-#SET(TOOLCHAIN_PREFIX "/usr/local") # Set depending on System (f.e. Homebrew)
 
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
 # Also remove "undefined reference to `_sbrk'" error
