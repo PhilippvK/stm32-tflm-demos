@@ -19,7 +19,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/micro_speech/command_responder.h"
 #include "tensorflow/lite/micro/examples/micro_speech/feature_provider.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
-#include "tensorflow/lite/micro/examples/micro_speech/recognize_commands.h"
+#include "recognize_commands.h"
 #ifdef TFLM_MODE_COMPILER
 #include "offline_model.h"
 #include "tensorflow/lite/c/common.h"
