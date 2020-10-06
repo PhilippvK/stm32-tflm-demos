@@ -88,6 +88,7 @@ endif()
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
 # Prepare Tensorflow Lite (micro)
+#SET(TF_COMMIT d6426459bca2971b611ca9773858e55f6cc1a9af) # Comment in if TF update introduces errors
 FIND_PACKAGE(TFLite REQUIRED)
 SET(TFLITE_PLATFORM micro)
 

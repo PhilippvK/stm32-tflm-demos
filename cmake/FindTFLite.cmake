@@ -162,6 +162,10 @@ FILE(GLOB TFL_C_SRCS
     ${TFL_SRC}/c/common.c
     )
 
+  FILE(GLOB TFL_SCHEMA_SRCS
+    ${TFL_SRC}/schema/schema_utils.cc
+    )
+
 FILE(GLOB TFL_MEM_PLANNER_SRCS
     ${TFLM_SRC}/memory_planner/*.cc
     )
@@ -192,6 +196,7 @@ SET(TFL_SRCS
     ${TFL_KERNELS_SRCS}
     ${TFL_CORE_API_SRCS}
     ${TFL_C_SRCS}
+    ${TFL_SCHEMA_SRCS}
     ${TFL_MEM_PLANNER_SRCS}
     ${TFL_EXP_C_SRCS}
     ${TFL_EXP_CC_SRCS}
