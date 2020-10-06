@@ -20,10 +20,6 @@ set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS})
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Wall -mfpu=fpv4-sp-d16 -Wl,-Map=output.map -Wl,--gc-sections -g3")
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
-include(${CMAKE_TOOLCHAIN_FILE})
-
 set(TFLM_MODES interpreter compiler)
 set(TFLM_COMPILER_EXECUTABLE "/Users/Philipp/src/work/fp/git/tflite_micro_compiler_working/build/compiler") # TODO
 
@@ -35,7 +31,10 @@ set(STM_BOARD STM32F769I-Discovery)
 STRING(REPLACE "-" "_" STM_BOARD_CLEAN ${STM_BOARD})
 STRING(TOUPPER ${STM_BOARD_CLEAN} STM_BOARD_CLEAN_UPPER)
 ADD_DEFINITIONS(-DSTM32_BOARD_${STM_BOARD_CLEAN_UPPER})
-MESSAGE(STATUS "-DSTM32_BOARD_${STM_BOARD_CLEAN_UPPER}")
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
+include(${CMAKE_TOOLCHAIN_FILE})
 
 ### Configure TFML Board here ###
 #set(TFLM_BOARD disco_f413zh)

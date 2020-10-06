@@ -47,4 +47,3 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(B_USER_GPIO_Port, &GPIO_InitStruct);
 
 }
-#endif
