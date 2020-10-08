@@ -1,5 +1,5 @@
 # STM32 TensorFlow Lite Micro Hello World + Micro Speech Demos
-Collection of STM32 projects making use of Tensorflow Lite Micro. Examples inpired by TinyML Book: https://www.oreilly.com/library/view/tinyml/9781492052036/
+Collection of STM32 projects making use of Tensorflow Lite Micro. Examples inspired by TinyML Book: https://www.oreilly.com/library/view/tinyml/9781492052036/
 
 **Toolchain:**
 CMake-based. See Template: https://github.com/alxhoff/STM3240G-EVAL-TensorFlow-Hello-World
