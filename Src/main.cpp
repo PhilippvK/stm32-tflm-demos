@@ -120,7 +120,7 @@ int main(void)
 #ifndef ENABLE_TESTS
   setup();
 #else
-  //test_setup();
+  test_setup();
 #endif /* ENABLE_TESTS */
   fprintf(stderr, "Setup done! Main loop starts now!\n\r");
   while (true) {

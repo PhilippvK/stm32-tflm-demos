@@ -149,14 +149,7 @@ void SysTick_Handler(void)
   */
 void AUDIO_DFSDM_DMAx_MIC1_IRQHandler(void)
 {
-  //if(SdmmcTest == 1)
-  //{
-   // HAL_DMA_IRQHandler(uSdHandle.hdmatx);
-  //}
-  //else
-  //{
     HAL_DMA_IRQHandler(hAudioInDfsdmFilter[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)].hdmaReg);
-  //}
 }
 
 /**
