@@ -62,7 +62,7 @@ ELSEIF(STM32_FAMILY STREQUAL "F4")
     SET(HAL_PREFIX stm32f4xx_)
 
 ELSEIF(STM32_FAMILY STREQUAL "F7")
-    SET(HAL_COMPONENTS adc can cec cortex crc cryp dac dcmi dma dma2d eth flash
+    SET(HAL_COMPONENTS adc can cec cortex crc cryp dac dcmi dfsdm dma dma2d dsi eth flash
                        gpio hash hcd i2c i2s irda iwdg lptim ltdc nand nor pcd
                        pwr qspi rcc rng rtc sai sd sdram smartcard spdifrx spi
                        sram tim uart usart wwdg fmc sdmmc usb)
@@ -70,7 +70,7 @@ ELSEIF(STM32_FAMILY STREQUAL "F7")
     SET(HAL_REQUIRED_COMPONENTS cortex pwr rcc)
 
     # Components that have _ex sources
-    SET(HAL_EX_COMPONENTS adc crc cryp dac dcmi dma flash hash i2c pcd
+    SET(HAL_EX_COMPONENTS adc crc cryp dac dcmi dma flash hash i2c ltdc pcd
                           pwr rcc rtc sai tim)
 
     SET(HAL_PREFIX stm32f7xx_)
@@ -91,14 +91,14 @@ ELSEIF(STM32_FAMILY STREQUAL "L1")
 					   gpio i2c i2s irda iwdg lcd nor opamp pcd pwr rcc rtc
 					   sd smartcard spi sram tim uart usart wwdg)
     SET(HAL_REQUIRED_COMPONENTS cortex pwr)
-    
+
     # Components that have _ex sources
     SET(HAL_EX_COMPONENTS adc cryp dac flash opamp pcd pwr rcc rtc spi tim)
     # Components that have ll_ in names instead of hal_
 
     SET(HAL_PREFIX stm32l1xx_)
 ELSEIF(STM32_FAMILY STREQUAL "L4")
-    SET(HAL_COMPONENTS adc can comp cortex crc cryp dac dcmi dfsdm dma dma2d dsi 
+    SET(HAL_COMPONENTS adc can comp cortex crc cryp dac dcmi dfsdm dma dma2d dsi
                        firewall flash flash_ramfunc gfxmmu gpio hash hcd i2c irda iwdg
                        lcd lptim ltdc nand nor opamp ospi pcd pwr qspi rcc rng rtc sai
                        sd smartcard smbus spi sram swpmi tim tsc uart usart wwdg)
@@ -106,9 +106,9 @@ ELSEIF(STM32_FAMILY STREQUAL "L4")
     SET(HAL_REQUIRED_COMPONENTS cortex pwr rcc)
 
     # Components that have _ex sources
-    SET(HAL_EX_COMPONENTS adc crc cryp dac dfsdm dma flash hash i2c ltdc 
+    SET(HAL_EX_COMPONENTS adc crc cryp dac dfsdm dma flash hash i2c ltdc
                           opamp pcd pwr rcc rtc sai sd smartcard spi tim uart usart)
-                          
+
     SET(HAL_PREFIX stm32l4xx_)
 
 ENDIF()

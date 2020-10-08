@@ -19,13 +19,11 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
 
-// TODO
-#include "stm32f413h_discovery.h"
-#include "stm32f413h_discovery_lcd.h"
-#include <string.h>
-#include <stdlib.h>
-void plot_wave(int16_t* samples, int size);
-void plot_features(int8_t* features, int slices_needed);
+//#include "main.h"
+//#include <string.h>
+//#include <stdlib.h>
+//void plot_wave(int16_t* samples, int size);
+//void plot_features(int8_t* features, int slices_needed);
 
 FeatureProvider::FeatureProvider(int feature_size, int8_t* feature_data)
     : feature_size_(feature_size),
@@ -132,108 +130,108 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
   return kTfLiteOk;
 }
 
-void plot_wave(int16_t* samples, int size) {
-  static int *audio_plot_buffer;
-
-  if (!audio_plot_buffer) {
-    audio_plot_buffer = new int[BSP_LCD_GetXSize()];
-  }
-
-  int stride = size/BSP_LCD_GetXSize();
-  int y_center = BSP_LCD_GetYSize()/6;
-  int audio_magnitude = y_center;
-  BSP_LCD_FillRect(0,0,BSP_LCD_GetXSize(),BSP_LCD_GetYSize()/3);
-  for(uint32_t i=0;i<BSP_LCD_GetXSize();i++)
-  {
-    audio_magnitude = y_center + (int)(samples[16000*(kFeatureSliceDurationMs-kFeatureSliceStrideMs)/1000+i*stride]/256);
-    if (audio_magnitude < 0)
-      audio_magnitude = 0;
-    if (audio_magnitude > 2*y_center)
-      audio_magnitude = 2*y_center - 1;
-    audio_plot_buffer[i] = audio_magnitude;
-  }
-  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  for(uint32_t i=0;i<BSP_LCD_GetXSize()-1;i++)
-    BSP_LCD_DrawLine(i,audio_plot_buffer[i],i+1,audio_plot_buffer[i+1]);
-  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-}
-
-uint32_t calculate_rgb(int min, int max, int value) {
-  if (value<min) {
-    value = min;
-  } else if (value > max) {
-    value = max;
-  }
-  uint32_t tmp = (value-min);
-  return (tmp)+((tmp)<<8)+((tmp)<<16);
-  //uint32_t ret = 0xFF000000;
-  uint32_t ret = 0x000000;
-  int mid_point = (min + max) / 2;
-  int range = (max - min);
-  if (value >= mid_point) {
-    uint32_t delta = (value - mid_point)*512 / range;
-    if (delta > 255) {  delta = 255;  }
-    ret = ret | (delta << 16);
-    ret = ret | ( (255-delta) << 8 );
-  } else {
-    int delta = value*512 / range;
-    if (delta > 255) {  delta = 255;  }
-    ret = ret | (delta << 8);
-    ret = ret | (255 - delta);
-  }
-  return ret;
-}
-
-void plot_features(int8_t* features, int slices_needed) {
-  //const int slices_to_keep = kFeatureSliceCount - slices_needed;
-  static uint8_t *feature_plot_buffer;
-  //static int mfcc_update_counter=0;
-  const int how_many = 3;
-  const int limit = 10;
-  static int index = 0;
-
-  if (!feature_plot_buffer) {
-    feature_plot_buffer = new uint8_t[kFeatureSliceSize*kFeatureSliceCount*how_many];
-  }
-  memcpy(feature_plot_buffer, feature_plot_buffer+slices_needed*kFeatureSliceSize, kFeatureSliceSize*(kFeatureSliceCount*how_many-slices_needed));
-  memcpy(feature_plot_buffer+kFeatureSliceSize*(kFeatureSliceCount*how_many-slices_needed), features+kFeatureSliceSize*(kFeatureSliceCount-slices_needed), slices_needed*kFeatureSliceSize);
-
-  index++;
-  if (index == limit) {
-    index = 0;
-  int x_step = 1;
-  int y_step = 1; //6;
-
-  //uint32_t* pBuffer = mfcc_plot_buffer + kFeatureSliceSize*(how_many*kFeatureSliceCount-2);
-
-  //for (int i=0;i<slices_needed;i++) {
-  //  for (int j=0;j<kFeatureSliceSize;j++) {
-  //    int value = features[(kFeatureSliceSize*(kFeatureSliceCount-2))+i*kFeatureSliceSize+j];
-  //    uint32_t RGB  = calculate_rgb(-128, 127, value*4);
-  //    sum += abs(value);
-  //    pBuffer[i*kFeatureSliceSize+j] = RGB;
-  //  }
-  //}
-  //int x_start = (BSP_LCD_GetXSize() - (kFeatureSliceCount*how_many))/2;
-  int x_start = (BSP_LCD_GetXSize() - (kFeatureSliceCount*how_many))/2;
-  x_start = (x_start>0) ? x_start:0;
-  //mfcc_update_counter++;
-  //if(mfcc_update_counter==how_many) {
-    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-    BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
-    BSP_LCD_FillRect(0, 200, BSP_LCD_GetXSize(), BSP_LCD_GetYSize()-200);
-    for (int i=0;i<how_many*kFeatureSliceCount;i++) {
-      for (int j=0;j<kFeatureSliceSize;j++) {
-        for (int x=0;x<x_step;x++) {
-          for (int y=0;y<y_step;y++) {
-            //BSP_LCD_DrawPixel(x_start+i*x_step+x,200+j*y_step+y, mfcc_plot_buffer[i*kFeatureSliceSize+j]);
-            uint32_t color = calculate_rgb(-128, 127, feature_plot_buffer[i*kFeatureSliceSize+j]);
-            BSP_LCD_DrawPixel(x_start+i*x_step+x,200+j*y_step+y, color);
-          }
-        }
-      }
-    }
-  //mfcc_update_counter=0;
-  //}
-  }
-}
+//void plot_wave(int16_t* samples, int size) {
+//  static int *audio_plot_buffer;
+//
+//  if (!audio_plot_buffer) {
+//    audio_plot_buffer = new int[BSP_LCD_GetXSize()];
+//  }
+//
+//  int stride = size/BSP_LCD_GetXSize();
+//  int y_center = BSP_LCD_GetYSize()/6;
+//  int audio_magnitude = y_center;
+//  BSP_LCD_FillRect(0,0,BSP_LCD_GetXSize(),BSP_LCD_GetYSize()/3);
+//  for(uint32_t i=0;i<BSP_LCD_GetXSize();i++)
+//  {
+//    audio_magnitude = y_center + (int)(samples[16000*(kFeatureSliceDurationMs-kFeatureSliceStrideMs)/1000+i*stride]/256);
+//    if (audio_magnitude < 0)
+//      audio_magnitude = 0;
+//    if (audio_magnitude > 2*y_center)
+//      audio_magnitude = 2*y_center - 1;
+//    audio_plot_buffer[i] = audio_magnitude;
+//  }
+//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+//  for(uint32_t i=0;i<BSP_LCD_GetXSize()-1;i++)
+//    BSP_LCD_DrawLine(i,audio_plot_buffer[i],i+1,audio_plot_buffer[i+1]);
+//  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+//}
+//
+//uint32_t calculate_rgb(int min, int max, int value) {
+//  if (value<min) {
+//    value = min;
+//  } else if (value > max) {
+//    value = max;
+//  }
+//  uint32_t tmp = (value-min);
+//  return (tmp)+((tmp)<<8)+((tmp)<<16);
+//  //uint32_t ret = 0xFF000000;
+//  uint32_t ret = 0x000000;
+//  int mid_point = (min + max) / 2;
+//  int range = (max - min);
+//  if (value >= mid_point) {
+//    uint32_t delta = (value - mid_point)*512 / range;
+//    if (delta > 255) {  delta = 255;  }
+//    ret = ret | (delta << 16);
+//    ret = ret | ( (255-delta) << 8 );
+//  } else {
+//    int delta = value*512 / range;
+//    if (delta > 255) {  delta = 255;  }
+//    ret = ret | (delta << 8);
+//    ret = ret | (255 - delta);
+//  }
+//  return ret;
+//}
+//
+//void plot_features(int8_t* features, int slices_needed) {
+//  //const int slices_to_keep = kFeatureSliceCount - slices_needed;
+//  static uint8_t *feature_plot_buffer;
+//  //static int mfcc_update_counter=0;
+//  const int how_many = 3;
+//  const int limit = 10;
+//  static int index = 0;
+//
+//  if (!feature_plot_buffer) {
+//    feature_plot_buffer = new uint8_t[kFeatureSliceSize*kFeatureSliceCount*how_many];
+//  }
+//  memcpy(feature_plot_buffer, feature_plot_buffer+slices_needed*kFeatureSliceSize, kFeatureSliceSize*(kFeatureSliceCount*how_many-slices_needed));
+//  memcpy(feature_plot_buffer+kFeatureSliceSize*(kFeatureSliceCount*how_many-slices_needed), features+kFeatureSliceSize*(kFeatureSliceCount-slices_needed), slices_needed*kFeatureSliceSize);
+//
+//  index++;
+//  if (index == limit) {
+//    index = 0;
+//  int x_step = 1;
+//  int y_step = 1; //6;
+//
+//  //uint32_t* pBuffer = mfcc_plot_buffer + kFeatureSliceSize*(how_many*kFeatureSliceCount-2);
+//
+//  //for (int i=0;i<slices_needed;i++) {
+//  //  for (int j=0;j<kFeatureSliceSize;j++) {
+//  //    int value = features[(kFeatureSliceSize*(kFeatureSliceCount-2))+i*kFeatureSliceSize+j];
+//  //    uint32_t RGB  = calculate_rgb(-128, 127, value*4);
+//  //    sum += abs(value);
+//  //    pBuffer[i*kFeatureSliceSize+j] = RGB;
+//  //  }
+//  //}
+//  //int x_start = (BSP_LCD_GetXSize() - (kFeatureSliceCount*how_many))/2;
+//  int x_start = (BSP_LCD_GetXSize() - (kFeatureSliceCount*how_many))/2;
+//  x_start = (x_start>0) ? x_start:0;
+//  //mfcc_update_counter++;
+//  //if(mfcc_update_counter==how_many) {
+//    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+//    BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+//    BSP_LCD_FillRect(0, 200, BSP_LCD_GetXSize(), BSP_LCD_GetYSize()-200);
+//    for (int i=0;i<how_many*kFeatureSliceCount;i++) {
+//      for (int j=0;j<kFeatureSliceSize;j++) {
+//        for (int x=0;x<x_step;x++) {
+//          for (int y=0;y<y_step;y++) {
+//            //BSP_LCD_DrawPixel(x_start+i*x_step+x,200+j*y_step+y, mfcc_plot_buffer[i*kFeatureSliceSize+j]);
+//            uint32_t color = calculate_rgb(-128, 127, feature_plot_buffer[i*kFeatureSliceSize+j]);
+//            BSP_LCD_DrawPixel(x_start+i*x_step+x,200+j*y_step+y, color);
+//          }
+//        }
+//      }
+//    }
+//  //mfcc_update_counter=0;
+//  //}
+//  }
+//}

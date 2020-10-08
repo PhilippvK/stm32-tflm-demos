@@ -64,7 +64,7 @@ FIND_PATH(FATFS_DRIVER_INCLUDE_DIR ${FATFS_DRIVER_HEADERS}
 )
 
 IF(${FATFS_DRIVER_INCLUDE_DIR} STREQUAL FATFS_DRIVER_INCLUDE_DIR-NOTFOUND)
-    MESSAGE("Driver header files not located in STM firemware, please manually include the appropriate X_diskio.h directory")
+  MESSAGE(STATUS "Driver header files not located in STM firemware, please manually include the appropriate X_diskio.h directory")
     SET(FATFS_INCLUDE_DIRS
     ${FATFS_COMMON_INCLUDE_DIR}
         )
@@ -92,7 +92,7 @@ FOREACH(SRC ${FATFS_DRIVER_SOURCES})
     )
 STRING(FIND ${SRC_FILE} "NOTFOUND" SRC_FILE_NOTFOUND)
 IF(NOT ${SRC_FILE_NOTFOUND} EQUAL -1)
-    MESSAGE("Driver source files not located in STM firemware, please manually source the appropriate X_diskio.c files")
+  MESSAGE(STATUS "Driver source files not located in STM firemware, please manually source the appropriate X_diskio.c files")
 ELSE()
     LIST(APPEND FATFS_SOURCES ${SRC_FILE})
 ENDIF()
@@ -107,8 +107,8 @@ FOREACH(SRC ${FATFS_OPTION_SOURCES})
     LIST(APPEND FATFS_SOURCES ${SRC_FILE})
 ENDFOREACH()
 
-message(STATUS "fatfs include " ${FATFS_INCLUDE_DIRS})
-message(STATUS "fatfs sources " ${FATFS_SOURCES})
+message(STATUS "FATFS_SOURCES=${FATFS_SOURCES}")
+message(STATUS "FATFS_INCLUDE_DIRS=${FATFS_INCLUDE_DIRS}")
 
 INCLUDE(FindPackageHandleStandardArgs)
 

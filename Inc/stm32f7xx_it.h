@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    stm32f4xx_it.h
+  * @file    stm32f7xx_it.h
   * @brief   This file contains the headers of the interrupt handlers.
   ******************************************************************************
   * @attention
@@ -17,12 +17,12 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4xx_IT_H
-#define __STM32F4xx_IT_H
+#ifndef __STM32F7xx_IT_H
+#define __STM32F7xx_IT_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif
+#endif 
 
 /* Private includes ----------------------------------------------------------*/
  #include "main.h"
@@ -44,13 +44,14 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 
-void BSP_PSRAM_DMA_IRQHandler(void);
-void AUDIO_OUT_I2Sx_DMAx_IRQHandler(void);
-void AUDIO_DFSDM_DMAx_MIC1_IRQHandler(void);
-void AUDIO_DFSDM_DMAx_MIC2_IRQHandler(void);
+void DMA2_Stream0_IRQHandler(void);
+void DMA2_Stream5_IRQHandler(void);
+void AUDIO_DFSDMx_DMAx_BUTTOM_LEFT_IRQHandler(void);
+void AUDIO_DFSDMx_DMAx_BUTTOM_RIGHT_IRQHandler(void);
+void AUDIO_OUT_SAIx_DMAx_IRQHandler(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F4xx_IT_H */
+#endif /* __STM32F7xx_IT_H */
