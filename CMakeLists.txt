@@ -36,9 +36,12 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
 
-### Configure TFML Board here ###
-#set(TFLM_BOARD disco_f413zh)
-set(TFLM_BOARD disco_f769ni)
+# Configure TFML Board
+IF(${STM_BOARD} STREQUAL "STM32F413H-Discovery")
+  set(TFLM_BOARD disco_f413zh)
+ELSEIF(${STM_BOARD} STREQUAL "STM32F769I-Discovery")
+  set(TFLM_BOARD disco_f769ni)
+ENDIF()
 
 ### Configure TFML Mode here ###
 #set(TFLM_MODE compiler)
@@ -54,7 +57,7 @@ endif()
 SET(TFLM_USE_CMSIS_NN ON)
 
 ### Enable/Disable Benchmarking ###
-SET(ENABLE_BENCHMARKING ON)
+SET(ENABLE_BENCHMARKING OFF)
 IF(${ENABLE_BENCHMARKING})
   add_definitions(-DBENCHMARKING)
 ENDIF()
@@ -114,7 +117,7 @@ IF(${TFLM_BOARD} STREQUAL "disco_f413zh")
   FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio ili9325 stmpe811 st7789h2 ft6x06 wm8994 psram sd REQUIRED)
 ELSEIF(${TFLM_BOARD} STREQUAL "disco_f769ni")
   FIND_PACKAGE(STM32HAL COMPONENTS sram gpio uart i2s dac adc dfsdm sd dma dma2d qspi dsi ltdc sdram sai i2c REQUIRED)
-  FIND_PACKAGE(STM32LL COMPONENTS fmc REQUIRED)
+  FIND_PACKAGE(STM32LL COMPONENTS fmc sdmmc REQUIRED)
   FIND_PACKAGE(STM32BSP COMPONENTS ts lcd audio stmpe811 st7789h2 ft6x06 wm8994 sdram sd otm8009a REQUIRED)
 ENDIF()
 

@@ -236,33 +236,33 @@ static uint32_t GetData(void *pdata, uint32_t offset, uint8_t *pbuf, uint32_t Nb
            and their implementation should be done the user code if they are needed.
            Below some examples of callback implementations.
   ----------------------------------------------------------------------------*/
-///**
-//  * @brief  Manages the full Transfer complete event.
-//  * @param  None
-//  * @retval None
-//  */
-//void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
-//{
-//  if(audio_state == AUDIO_STATE_PLAYING)
-//  {
-//    /* allows AUDIO_Process() to refill 2nd part of the buffer  */
-//    buffer_ctl.state = BUFFER_OFFSET_FULL;
-//  }
-//}
-//
-///**
-//  * @brief  Manages the DMA Half Transfer complete event.
-//  * @param  None
-//  * @retval None
-//  */
-//void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-//{
-//  if(audio_state == AUDIO_STATE_PLAYING)
-//  {
-//    /* allows AUDIO_Process() to refill 1st part of the buffer  */
-//    buffer_ctl.state = BUFFER_OFFSET_HALF;
-//  }
-//}
+/**
+  * @brief  Manages the full Transfer complete event.
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+{
+  if(audio_state == AUDIO_STATE_PLAYING)
+  {
+    /* allows AUDIO_Process() to refill 2nd part of the buffer  */
+    buffer_ctl.state = BUFFER_OFFSET_FULL;
+  }
+}
+
+/**
+  * @brief  Manages the DMA Half Transfer complete event.
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+{
+  if(audio_state == AUDIO_STATE_PLAYING)
+  {
+    /* allows AUDIO_Process() to refill 1st part of the buffer  */
+    buffer_ctl.state = BUFFER_OFFSET_HALF;
+  }
+}
 
 /**
   * @brief  Manages the DMA FIFO error event.

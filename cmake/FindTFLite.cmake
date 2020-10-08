@@ -148,7 +148,7 @@ IF(TFLM_USE_CMSIS_NN)
   ENDFOREACH()
 
   MESSAGE(STATUS "Patching cmsis-nn kernels...")
-  EXECUTE_PROCESS(COMMAND bash "-c" "grep -qri 'cmsis/CMSIS/NN/Include' ${TFLM_SRC}/kernels/cmsis-nn || find ${TFLM_SRC}/kernels/cmsis-nn -iname '*.cc' | xargs sed -i -E $'s@cmsis/CMSIS/NN/Include/@@g'")
+  EXECUTE_PROCESS(COMMAND bash "-c" "grep -qri 'cmsis/CMSIS/NN/Include' ${TFLM_SRC}/kernels/cmsis-nn && find ${TFLM_SRC}/kernels/cmsis-nn -iname '*.cc' | xargs sed -i -E $'s@cmsis/CMSIS/NN/Include/@@g' || :")
 
 ENDIF()
 

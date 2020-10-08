@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.h
@@ -15,9 +14,9 @@
   * the License. You may obtain a copy of the License at:
   *                             www.st.com/SLA0044
   *
+  * TODO
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
@@ -56,6 +55,11 @@ extern "C" {
 /* FatFs/SD Includes */
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
+
+#ifdef FAKE_MIC
+/* AudioPlayer Includes */
+#include "audio_playback.h"
+#endif /* FAKE_MIC */
 
 /* USER CODE END Includes */
 
