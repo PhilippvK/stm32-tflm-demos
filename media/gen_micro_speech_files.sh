@@ -7,7 +7,7 @@ COUNT=$4
 SOX=$(which sox)
 
 function print_usage() {
-  echo 'Usage: ./gen_wav_files.sh [DATASET_DIR] [OUTPUT_DIR] [COMMANDS] [COUNT]'
+  echo 'Usage: ./gen_micro_speech_files.sh [DATASET_DIR] [OUTPUT_DIR] [COMMANDS] [COUNT]'
 }
 
 if [[ -z $SOX ]]
