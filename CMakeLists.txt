@@ -55,6 +55,9 @@ endif()
 
 ### Enable/Disable usage of CMSISNN custom kernels ###
 SET(TFLM_USE_CMSIS_NN ON)
+IF(${TFLM_USE_CMSIS_NN})
+  add_definitions(-DCMSIS_NN)
+ENDIF()
 
 ### Enable/Disable Benchmarking ###
 SET(ENABLE_BENCHMARKING OFF)
