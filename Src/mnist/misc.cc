@@ -4,6 +4,9 @@
 #include "main.h"
 #include <cstring>
 
+static void SendImageUART(void *image, size_t pixel_size, size_t image_size, char flags);
+static void DrawShrunkImage(int x, int y);
+
 // MNIST (TODO: mode to misc.cc)
 signed char prev_value = -1;
 bool touched = false;
@@ -32,8 +35,8 @@ uint16_t AverageImageBlock(uint32_t block_size, uint32_t x, uint32_t y)
 {
   uint32_t ret[3] = { 0 };
 
-  for (int i = 0; i < block_size; i++)
-    for (int j = 0; j < block_size; j++) {
+  for (uint32_t i = 0; i < block_size; i++)
+    for (uint32_t j = 0; j < block_size; j++) {
       ret[0] += TSInputImage[y * block_size + i]
                 [x * block_size + j] &
           0x1F;
@@ -56,8 +59,8 @@ void PreprocessImage(void)
 {
   uint8_t scale_factor = image_size_pixel / image_size;
 
-  for (int y = 0; y < image_size; y++)
-    for (int x = 0; x < image_size; x++) {
+  for (uint32_t y = 0; y < image_size; y++)
+    for (uint32_t x = 0; x < image_size; x++) {
       NNInputImage[y][x] = 255 -
         AverageImageBlock(scale_factor, x, y);
     }
@@ -79,9 +82,9 @@ static void SendImageUART(void *image, size_t pixel_size, size_t image_size,
   char *buffer = (char *)malloc((image_size + 3) * sizeof(char));
   memset(buffer, 0, (image_size + 3) * sizeof(char));
   fprintf(stderr, "**********IMAGE START**********\n\r");
-  for (int i = 0; i < image_size; i++) {
+  for (uint32_t i = 0; i < image_size; i++) {
     buffer[0] = '|';
-    for (int j = 0; j < image_size; j++) {
+    for (uint32_t j = 0; j < image_size; j++) {
       if (flags & 0b1) {
         buffer[j + 1] = (*((char *)image +
                (i * image_size + j) *
@@ -133,8 +136,8 @@ void SaveMNISTInput(void)
   volatile int marginX = INPUT_BOX_X_INNER;
   volatile int marginY = INPUT_BOX_Y_INNER;
   TSInputImage[0][0] = 1; // TODO: find out why?
-  for (int y = 0; y < image_size_pixel; y++) {
-    for (int x = 0; x < image_size_pixel; x++) {
+  for (uint32_t y = 0; y < image_size_pixel; y++) {
+    for (uint32_t x = 0; x < image_size_pixel; x++) {
       TSInputImage[y][x] = ConvertHighColorToGS(BSP_LCD_ReadPixel(x + marginX, y + marginY));
     }
   }
@@ -226,7 +229,7 @@ void PrintMNISTHint() {
 }
 
 bool GetTouchInput() {
-  static const uint32_t dot_radius = TOUCH_DOT_RADIUS;
+  static const int32_t dot_radius = TOUCH_DOT_RADIUS;
   static int32_t x = 0, y = 0;
 
   if (BSP_TS_GetState(&TS_State) != TS_OK) {

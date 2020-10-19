@@ -34,8 +34,6 @@ uint8_t* MNISTGetNNInputImage(void);
 uint16_t AverageImageBlock(uint32_t block_size, uint32_t x, uint32_t y);
 void PreprocessImage(void);
 uint8_t ConvertHighColorToGS(uint16_t pixel);
-static void SendImageUART(void *image, size_t pixel_size, size_t image_size, char flags);
-static void DrawShrunkImage(int x, int y);
 void DrawInputBox(void);
 void SaveMNISTInput(void);
 void DrawInputScreen(void);

@@ -72,7 +72,6 @@ int main(void)
   uint32_t file_index = 0;
   uint32_t file_count;
 #endif /* FAKE_MIC || FAKE_TOUCH*/
-  int8_t *output_array; // TODO
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
