@@ -1,7 +1,7 @@
 # File Structure
 
 **Note:** Only locations which are not self-explanatory have been included.
-
+```
 .   
 ├──/cmake    
 ├──/Inc    
@@ -9,18 +9,18 @@
 ├──/models *original trained model TFL files*  
 ├──/Src    
 └──CMakeLists.txt
-
+```
 
 ## */cmake* Folder
 See [Patches](Patches.md) 
 
 ## */Src* Folder
-The folders below contain *\*.h* header files to maintain a consistent folder structure with the examples from the original TF repository, even if they are inside of the *Src* folder. This could potentially enable their merging into Google's Tensorflow repository at a later point.
-
+The folders below contain *\*.cc/\*.h* header files to maintain a consistent folder structure with the examples from the original TF repository, even if they are inside of the *Src* folder. This could potentially enable their merging into Google's Tensorflow repository at a later point.
+```
 .   
 ├──/hello_world    
 ├──/micro_speech
-
+```
 
 ## Configuring *CMakeLists.txt*
 - **Line 24:** choose TF model compiler executable file
@@ -31,4 +31,4 @@ The folders below contain *\*.h* header files to maintain a consistent folder st
 - **Lines 127-129:** choose which project to deploy: `hello_world` or `micro_speech` 
 
 ## During project build
-Use `make convert` to get a hex dump of your model code from a given *\*.tflite* file.
+Use `make convert` to convert your model code from a given *\*.tflite* file. (see https://github.com/tum-ei-eda/tflite_micro_compiler)
