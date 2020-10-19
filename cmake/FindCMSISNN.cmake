@@ -175,8 +175,8 @@ ENDFOREACH()
 
 # Workaround (See https://github.com/ARMmbed/mbed-os/issues/12568)
 MESSAGE(STATUS "Adding Workaround for '__SXTB16_RORn' to CMSIS-NN...")
-EXECUTE_PROCESS(COMMAND "bash" "-c" "grep -r 'uint32_t __patched_SXTB16_RORn' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c || sed -i -E 's@__SXTB16_RORn@__patched_SXTB16_RORn@g' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c")
-EXECUTE_PROCESS(COMMAND "bash" "-c" "grep -r 'uint32_t __patched_SXTB16_RORn' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c || sed -i -E $'33 a \\\n\\\n// Work around for https://github.com/ARMmbed/mbed-os/issues/12568\\\n__STATIC_FORCEINLINE uint32_t __patched_SXTB16_RORn(uint32_t op1, uint32_t rotate) {\\\n  uint32_t result;\\\n  __ASM (\"sxtb16 %0, %1, ROR %2\" : \"=r\" (result) : \"r\" (op1), \"i\" (rotate) );\\\n  return result;\\\n}' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c")
+EXECUTE_PROCESS(COMMAND "bash" "-c" "grep -rq 'uint32_t __patched_SXTB16_RORn' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c || sed -i -E 's@__SXTB16_RORn@__patched_SXTB16_RORn@g' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c")
+EXECUTE_PROCESS(COMMAND "bash" "-c" "grep -rq 'uint32_t __patched_SXTB16_RORn' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c || sed -i -E $'33 a \\\n\\\n// Work around for https://github.com/ARMmbed/mbed-os/issues/12568\\\n__STATIC_FORCEINLINE uint32_t __patched_SXTB16_RORn(uint32_t op1, uint32_t rotate) {\\\n  uint32_t result;\\\n  __ASM (\"sxtb16 %0, %1, ROR %2\" : \"=r\" (result) : \"r\" (op1), \"i\" (rotate) );\\\n  return result;\\\n}' ${ARM_CMSIS_DIR}/NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c")
 
 FIND_PATH(CMSIS_DSP_PRIVATE_INC_DIR ${CMSIS_DSP_PRIVATE_HEADERS}
     PATHS ${ARM_CMSIS_DIR}/DSP/PrivateInclude
