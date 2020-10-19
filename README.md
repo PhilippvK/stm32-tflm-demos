@@ -7,6 +7,7 @@ CMake-based. See Template: https://github.com/alxhoff/STM3240G-EVAL-TensorFlow-H
 **Supported Examples**
 - [Hello World](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/examples/hello_world)
 - [Micro Speech](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/examples/micro_speech)
+- MNIST
 
 **Supported Boards:**
 - STM32F413H-Discovery (`disco_f413zh`)

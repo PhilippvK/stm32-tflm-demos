@@ -7,6 +7,7 @@ set(TFLM_BOARDS
 set(TFLM_EXAMPLES
     hello_world
     micro_speech
+    mnist
 )
 
 set(TFLM_COMMON_HEADERS
@@ -82,6 +83,21 @@ message(STATUS "TFLMExamples Sources: ${TFLMExamples_SOURCES}")
 MESSAGE(STATUS "TFLMExamples Include Dirs: ${TFLMExamples_INCLUDE_DIR}")
 
 add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
+
+IF("${TFLM_EXAMPLE}" STREQUAL "hello_world")
+  add_definitions(-DHELLO_WORLD_EXAMPLE)
+ELSEIF("${TFLM_EXAMPLE}" STREQUAL "micro_speech")
+  add_definitions(-DMICRO_SPEECH_EXAMPLE)
+  add_definitions(-DFIXED_POINT=16)
+  IF(${FAKE_MIC})
+    add_definitions(-DFAKE_MIC -DTFLM_FILE_EXT="*.wav")
+  ENDIF()
+ELSEIF("${TFLM_EXAMPLE}" STREQUAL "mnist")
+  add_definitions(-DMNIST_EXAMPLE)
+  IF(${FAKE_TOUCH})
+    add_definitions(-DFAKE_TOUCH -DTFLM_FILE_EXT="*.bmp")
+  ENDIF()
+ENDIF()
 
 INCLUDE(FindPackageHandleStandardArgs)
 

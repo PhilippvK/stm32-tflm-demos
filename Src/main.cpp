@@ -14,9 +14,9 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-#ifdef FAKE_MIC
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
 #include "sdcard.h"
-#endif /* FAKE_MIC */
+#endif /* FAKE_MIC || FAKE_TOUCH*/
 
 
 /* TFLM Includes ------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 /* Private includes ----------------------------------------------------------*/
 #include <string.h>
 #include <cstdio>
+#include <math.h>
 
 #ifdef BENCHMARKING
 #include "benchmarking.h"
@@ -42,21 +43,19 @@
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-//TS_StateTypeDef TS_State;
-#ifdef FAKE_MIC
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
 char* filenames[MAX_FILES];
 FSIZE_t filesizes[MAX_FILES];
 uint8_t* data;
-#endif /* FAKE_MIC */
-
+#endif /* FAKE_MIC || FAKE_TOUCH */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void BSP_Init(void);
 static void BSP_Welcome(void);
-#ifdef FAKE_MIC
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
 void displayFileName(char* name);
-#endif /* FAKE_MIC */
+#endif /* FAKE_MIC || FAKE_TOUCH*/
 
 /* Private user code ---------------------------------------------------------*/
 
@@ -67,12 +66,12 @@ void displayFileName(char* name);
 int main(void)
 {
   /* Local Variables */
-#ifdef FAKE_MIC
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
   const uint32_t tick_limit = 5000;
   uint32_t last_ticks = 0;
   uint32_t file_index = 0;
   uint32_t file_count;
-#endif /* FAKE_MIC */
+#endif /* FAKE_MIC || FAKE_TOUCH*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -82,7 +81,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-
 
 #ifdef STM32_BOARD_STM32F413H_DISCOVERY
   MX_USART6_UART_Init();
@@ -98,63 +96,63 @@ int main(void)
   /* Show Welcome Screen */
   BSP_Welcome();
 
-#ifdef FAKE_MIC
-  file_count = get_wav_files("micro_speech", filenames, filesizes);
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
+  while(BSP_SD_IsDetected() != SD_PRESENT) // TODO
+  {
+    BSP_LCD_SetTextColor(LCD_COLOR_RED);
+    BSP_LCD_DisplayStringAt(5, BSP_LCD_GetYSize()-15, (uint8_t *)"SD Not Connected", LEFT_MODE);
+  }
+  file_count = get_files(TFLM_EXAMPLE, TFLM_FILE_EXT, filenames, filesizes);
   if (file_count > 0) {
-    data = get_wav_data("micro_speech", filenames[0], filesizes[0]);
-    if (data) {
-      AudioInit();
-      displayFileName(filenames[0]);
-      AudioPlay(data, filesizes[0]);
-      last_ticks = HAL_GetTick();
-    } else {
-      Error_Handler();
-    }
+    file_index = 0;
   } else {
     Error_Handler();
   }
-#endif /* FAKE_MIC */
-  
+#endif /* FAKE_MIC || FAKE_TOUCH */ 
+
   /* Infinite loop */
   fprintf(stderr, "--- TFLM Demo for STM32 Boards ---\n\r");
-#ifndef ENABLE_TESTS
   setup();
-#else
-  test_setup();
-#endif /* ENABLE_TESTS */
   fprintf(stderr, "Setup done! Main loop starts now!\n\r");
   while (true) {
-#ifndef ENABLE_TESTS
-    loop();
-
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
 #ifdef FAKE_MIC
     uint32_t cur_ticks = HAL_GetTick();
     if (cur_ticks-last_ticks > tick_limit) {
       last_ticks = cur_ticks;
-      file_index = (file_index + 1) % file_count;
-      AudioDeinit();
+      AudioDeinit(); // TODO: only if init?
       AudioInit();
-      free(data);
-      data = get_wav_data("micro_speech", filenames[file_index], filesizes[file_index]);
+#endif /* FAKE_MIC */
+#ifdef FAKE_TOUCH
+    if (1) { // No Condition
+#endif /* FAKE_TOUCH */
+      if (!data) {
+        free(data);
+      }
+      data = get_data(TFLM_EXAMPLE, filenames[file_index], filesizes[file_index]);
       if (data) {
-        HAL_Delay(50);
         displayFileName(filenames[file_index]);
+#ifdef FAKE_MIC
         AudioPlay(data, filesizes[file_index]);
+#endif /* FAKE_MIC */
+#ifdef FAKE_TOUCH
+        ImageShow(data, BSP_LCD_GetXSize() / 2 - INPUT_IMAGE_SIZE / 2, BSP_LCD_GetYSize() / 2 - INPUT_IMAGE_SIZE / 2);
+        HAL_Delay(1000);
+#endif /* FAKE_TOUCH */
       } else {
         Error_Handler();
       }
+      file_index = (file_index + 1) % file_count;
     }
-#endif /* FAKE_MIC */
+#endif /* FAKE_MIC || FAKE_TOUCH*/
 
-#else
-    test_loop();
-    HAL_Delay(1000);
-#endif /* ENABLE_TESTS */
+    loop();
 
 #ifdef BENCHMARKING
     print_summary(TICKS_POPULATE|TICKS_INVOKE|TICKS_RESPOND);
 #endif /* BENCHMARKING */
   }
+
   return 0;
 }
 
@@ -361,11 +359,11 @@ static void BSP_Init(void)
 
   /* Configure Touchscreen (optional) */
   //Touchscreen_Calibration();
-  //BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 
   /* Set Default LCD Colors and Fonts */
   BSP_LCD_Clear(LCD_COLOR_WHITE);
-  BSP_LCD_SetTextColor(LCD_COLOR_RED);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
 }
@@ -375,7 +373,7 @@ static void BSP_Init(void)
   * @retval None
   *
   */
-static void BSP_Welcome(void)
+static void BSP_Welcome()
 {
   /* Local Variables */
   const uint16_t delay_ms = 1000;
@@ -403,9 +401,9 @@ static void BSP_Welcome(void)
   BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
   sprintf(str, "Board: %16s", TFLM_BOARD);
-  BSP_LCD_DisplayStringAt(0, 100, (uint8_t *)str, CENTER_MODE);
-  sprintf(str, "EXAMPLE: %16s", TFLM_EXAMPLE);
-  BSP_LCD_DisplayStringAt(0, 150, (uint8_t *)str, CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2-20, (uint8_t *)str, CENTER_MODE);
+  sprintf(str, "Example: %16s", TFLM_EXAMPLE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2+10, (uint8_t *)str, CENTER_MODE);
 
   /* Wait a moment */
   HAL_Delay(delay_ms);
@@ -416,7 +414,7 @@ static void BSP_Welcome(void)
   BSP_LCD_SetFont(old_font);
 }
 
-#ifdef FAKE_MIC
+#if defined(FAKE_MIC) || defined(FAKE_TOUCH)
 void displayFileName(char* name) {
   char str[64];
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
@@ -424,7 +422,7 @@ void displayFileName(char* name) {
   sprintf(str, "<%s>", name);
   BSP_LCD_DisplayStringAt(0, 256-50, (uint8_t *)str, CENTER_MODE);
 }
-#endif /* FAKE_MIC */
+#endif /* FAKE_MIC || FAKE_TOUCH*/
 
 /**
   * @brief  Function used by printf tto write to the serial terminal
@@ -457,9 +455,7 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

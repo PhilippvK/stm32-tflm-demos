@@ -46,7 +46,12 @@
 /* Exported macro ------------------------------------------------------------*/
 
 /* Exported functions ------------------------------------------------------- */
+#ifdef STM32_BOARD_STM32F413H_DISCOVERY
 uint8_t  Touchscreen_Calibration (void);
+#endif /* STM32_BOARD_STM32F413H_DISCOVERY */
+#ifdef STM32_BOARD_STM32F769I_DISCOVERY
+void  Touchscreen_Calibration (void);
+#endif /* STM32_BOARD_STM32F769I_DISCOVERY */
 uint16_t TouchScreen_Get_Calibrated_X(uint16_t x);
 uint16_t TouchScreen_Get_Calibrated_Y(uint16_t y);
 uint8_t  TouchScreen_IsCalibrationDone(void);

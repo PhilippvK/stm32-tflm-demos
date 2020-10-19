@@ -34,7 +34,7 @@ static char sdpath[4]; /* SD card logical drive path */
 /* Private user code ---------------------------------------------------------*/
 
 // TODO
-uint8_t* get_wav_data(const char* path, char* file, FSIZE_t size) {
+uint8_t* get_data(const char* path, char* file, FSIZE_t size) {
   FRESULT res;
   uint32_t bytesread;
   char buf[64];
@@ -49,12 +49,10 @@ uint8_t* get_wav_data(const char* path, char* file, FSIZE_t size) {
       FATFS_UnLinkDriver(sdpath);
       return 0;
     } else {
+      dest = (uint8_t*)malloc(size * sizeof(uint8_t));
       if (!dest) {
-        dest = (uint8_t*)malloc(size * sizeof(uint8_t));
-        if (!dest) {
-          FATFS_UnLinkDriver(sdpath);
-          return 0;
-        }
+        FATFS_UnLinkDriver(sdpath);
+        return 0;
       }
       sprintf(buf, "%s/%s", path, file);
       if(f_open(&fil, buf, FA_READ) != FR_OK) {
@@ -82,7 +80,7 @@ uint8_t* get_wav_data(const char* path, char* file, FSIZE_t size) {
 }
 
 // TODO
-uint32_t get_wav_files(const char* path, char* files[], FSIZE_t sizes[]) {
+uint32_t get_files(const char* path, const char* extension, char* files[], FSIZE_t sizes[]) {
   FRESULT res;
   uint32_t index = 0;
 
@@ -95,8 +93,8 @@ uint32_t get_wav_files(const char* path, char* files[], FSIZE_t sizes[]) {
       FATFS_UnLinkDriver(sdpath);
       return 0;
     } else {
-      /* Start to search for wave files */
-      res = f_findfirst(&dir, &fno, path, "*.wav");
+      /* Start to search for files */
+      res = f_findfirst(&dir, &fno, path, extension);
 
       /* Repeat while an item is found */
       while (fno.fname[0]) {

@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file           : sdcard.h
-  * @brief          : Header for sdcard.c file.
-  *                   TODO
+  * @file           : audio.h
+  * @brief          : Header for audio.c file.
+  *                   This file contains the exported function prototypes for audio
   ******************************************************************************
   * @attention
   *
@@ -10,10 +10,11 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SDCARD_H
-#define __SDCRAD_H
+#ifndef __IMAGE_SHOW_H
+#define __IMAGE_SHOW_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,11 +23,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-#include "ff_gen_drv.h"
-#include "sd_diskio.h"
-
-
 /* Exported types ------------------------------------------------------------*/
 
 /* Exported constants --------------------------------------------------------*/
@@ -34,17 +30,10 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 
 /* Exported functions prototypes ---------------------------------------------*/
-uint32_t get_files(const char* path, const char* extension, char* files[], FSIZE_t sizes[]);
-uint8_t* get_data(const char* path, char* file, FSIZE_t size);
-uint32_t test_txt_file(void);
-
-/* Private defines -----------------------------------------------------------*/
-#define MAX_FILES 16
-#define MAX_FILENAME_LEN 32
-#define MAX_PATH_LEN 64
+void ImageShow(uint8_t* data, uint16_t x, uint16_t y);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SDCARD_H */
+#endif /* __IMAGE_SHOW_H */
