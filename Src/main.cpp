@@ -116,11 +116,7 @@ int main(void)
   
   /* Infinite loop */
   fprintf(stderr, "--- TFLM Demo for STM32 Boards ---\n\r");
-#ifndef ENABLE_TESTS
   setup();
-#else
-  test_setup();
-#endif /* ENABLE_TESTS */
   fprintf(stderr, "Setup done! Main loop starts now!\n\r");
   while (true) {
 #ifndef ENABLE_TESTS
@@ -145,15 +141,12 @@ int main(void)
     }
 #endif /* FAKE_MIC */
 
-#else
-    test_loop();
-    HAL_Delay(1000);
-#endif /* ENABLE_TESTS */
 
 #ifdef BENCHMARKING
     print_summary(TICKS_POPULATE|TICKS_INVOKE|TICKS_RESPOND);
 #endif /* BENCHMARKING */
   }
+
   return 0;
 }
 
