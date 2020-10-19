@@ -34,8 +34,8 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 
 /* Exported functions prototypes ---------------------------------------------*/
-uint32_t get_wav_files(const char* path, char* files[], FSIZE_t sizes[]);
-uint8_t* get_wav_data(const char* path, char* file, FSIZE_t size);
+uint32_t get_files(const char* path, const char* extension, char* files[], FSIZE_t sizes[]);
+uint8_t* get_data(const char* path, char* file, FSIZE_t size);
 uint32_t test_txt_file(void);
 
 /* Private defines -----------------------------------------------------------*/
