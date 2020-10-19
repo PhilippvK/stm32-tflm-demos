@@ -66,26 +66,16 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
-/* USER CODE END ET */
+/* Exported types ------------------------------------------------------------*/
 
 /* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 int __io_putchar(int ch);
 void Error_Handler(void);
 uint8_t CheckForUserInput(void);
-
-/* USER CODE BEGIN EFP */
-
-/* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #ifdef STM32_BOARD_STM32F413H_DISCOVERY
@@ -113,5 +103,3 @@ uint8_t CheckForUserInput(void);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

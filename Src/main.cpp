@@ -83,7 +83,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
-
 #ifdef STM32_BOARD_STM32F413H_DISCOVERY
   MX_USART6_UART_Init();
 #endif
@@ -365,7 +364,7 @@ static void BSP_Init(void)
 
   /* Set Default LCD Colors and Fonts */
   BSP_LCD_Clear(LCD_COLOR_WHITE);
-  BSP_LCD_SetTextColor(LCD_COLOR_RED);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
 }
@@ -375,7 +374,7 @@ static void BSP_Init(void)
   * @retval None
   *
   */
-static void BSP_Welcome(void)
+static void BSP_Welcome()
 {
   /* Local Variables */
   const uint16_t delay_ms = 1000;
@@ -403,9 +402,9 @@ static void BSP_Welcome(void)
   BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
   sprintf(str, "Board: %16s", TFLM_BOARD);
-  BSP_LCD_DisplayStringAt(0, 100, (uint8_t *)str, CENTER_MODE);
-  sprintf(str, "EXAMPLE: %16s", TFLM_EXAMPLE);
-  BSP_LCD_DisplayStringAt(0, 150, (uint8_t *)str, CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2-20, (uint8_t *)str, CENTER_MODE);
+  sprintf(str, "Example: %16s", TFLM_EXAMPLE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2+10, (uint8_t *)str, CENTER_MODE);
 
   /* Wait a moment */
   HAL_Delay(delay_ms);
@@ -457,9 +456,7 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

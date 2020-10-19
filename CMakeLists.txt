@@ -68,12 +68,11 @@ ENDIF()
 # Disable MBED (Only valid for Tensorflow Toolchain)
 add_definitions(-DNOMBED)
 
-### Configure hello_world Example ###
+### Configure 'hello_world' Example ###
 add_definitions(-DHELLO_WOLRD_DELAY_MS=100)
 
-### Configure micro_speech Example ###
-#add_definitions(-DFAKE_MIC) # Enable Fake Microphone
-add_definitions(-DFIXED_POINT=16)
+### Configure 'micro_speech' Example ###
+set(FAKE_MIC OFF) # Use SD Card instead of Microphone
 
 ### Edit User/Name for using a custom Repository ###
 SET(CUBE_REPO_USER "STMicroelectronics")

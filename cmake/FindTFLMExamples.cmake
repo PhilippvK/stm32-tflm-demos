@@ -83,6 +83,16 @@ MESSAGE(STATUS "TFLMExamples Include Dirs: ${TFLMExamples_INCLUDE_DIR}")
 
 add_definitions(-DTFLM_EXAMPLE="${TFLM_EXAMPLE}" -DTFLM_BOARD="${TFLM_BOARD}")
 
+IF("${TFLM_EXAMPLE}" STREQUAL "hello_world")
+  add_definitions(-DHELLO_WORLD_EXAMPLE)
+ELSEIF("${TFLM_EXAMPLE}" STREQUAL "micro_speech")
+  add_definitions(-DMICRO_SPEECH_EXAMPLE)
+  add_definitions(-DFIXED_POINT=16)
+  IF(${FAKE_MIC})
+    add_definitions(-DFAKE_MIC -DTFLM_FILE_EXT="*.wav")
+  ENDIF()
+ENDIF()
+
 INCLUDE(FindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(TFLMExamples DEFAULT_MSG TFLMExamples_INCLUDE_DIR TFLMExamples_SOURCES)
