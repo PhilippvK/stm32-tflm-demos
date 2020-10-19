@@ -61,16 +61,27 @@ extern "C" {
 #include "audio_playback.h"
 #endif /* FAKE_MIC */
 
-/* USER CODE END Includes */
+#ifdef FAKE_TOUCH
+/* ImageViewer Includes */
+#include "image_show.h"
+#endif /* FAKE_TOUCH */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
+// TODO
+#include "misc.h"
 
 /* Exported types ------------------------------------------------------------*/
 
 /* Exported constants --------------------------------------------------------*/
 
 /* Exported macro ------------------------------------------------------------*/
+#ifdef STM32_BOARD_STM32F413H_DISCOVERY
+// 565 - 16 bit
+#define GS2RGB(x) (uint16_t)(((x>>3)<<11)|((x>>2)<<5)|(x>>3))
+#endif /* STM32_BOARD_STM32F413H_DISCOVERY */
+#ifdef STM32_BOARD_STM32F769I_DISCOVERY
+// 8888 - 24 bit
+#define GS2RGB(x) (uint32_t)((0xff<<24)|(x<<16)|(x<<16)|(x<<8)|x)
+#endif /* STM32_BOARD_STM32F769I_DISCOVERY */
 
 /* Exported functions prototypes ---------------------------------------------*/
 int __io_putchar(int ch);

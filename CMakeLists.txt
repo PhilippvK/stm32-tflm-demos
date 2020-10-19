@@ -74,6 +74,9 @@ add_definitions(-DHELLO_WOLRD_DELAY_MS=100)
 ### Configure 'micro_speech' Example ###
 set(FAKE_MIC OFF) # Use SD Card instead of Microphone
 
+### Configure 'mnist' Example ###
+set(FAKE_TOUCH OFF) # Use SD Card instead of Touchscreen
+
 ### Edit User/Name for using a custom Repository ###
 SET(CUBE_REPO_USER "STMicroelectronics")
 #SET(CUBE_REPO_USER "alxhoff")
@@ -125,7 +128,8 @@ ENDIF()
 
 ### Comment in the target TFLM Example ###
 #FIND_PACKAGE(TFLMExamples COMPONENTS hello_world REQUIRED)
-FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
+#FIND_PACKAGE(TFLMExamples COMPONENTS micro_speech REQUIRED)
+FIND_PACKAGE(TFLMExamples COMPONENTS mnist REQUIRED)
 
 # Setting up tests (optional)
 SET(TEST_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/Inc/tests")
