@@ -1,0 +1,9 @@
+[submodule "examples/hello_world"]
+	path = examples/hello_world
+	url = https://github.com/PhilippvK/stm32-tflm-hello-world.git
+[submodule "examples/micro_speech"]
+	path = examples/micro_speech
+	url = https://github.com/PhilippvK/stm32-tflm-micro-speech.git
+[submodule "examples/mnist"]
+	path = examples/mnist
+	url = https://github.com/PhilippvK/stm32-tflm-mnist.git
