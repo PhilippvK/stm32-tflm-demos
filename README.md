@@ -40,7 +40,11 @@ Then:
 mkdir build
 cd build
 cmake -DTF_COMMIT=37c2bf5016fcbed261476386eced503e907cdc01 ..
+make
+make flash
 ```
+
+Other make targets we provide include ```make debug``` and ```make convert```(to convert the *.tflite* file into a board-readable format).
 
 ## Compatibility
 Due to recent updates of the TF Source tree which have not been implemented for the TFLM Compiler, you have to use Commit `37c2bf5016fcbed261476386eced503e907cdc01` or earlier when cloning the TF repositiory via CMake:
