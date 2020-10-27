@@ -63,7 +63,7 @@ cmake -DTF_COMMIT=37c2bf5016fcbed261476386eced503e907cdc01 ..
 If there are new changes for patched files in the TF Source Tree, they will probably not be merged with the modified file or patches might get overwritten. If something like this occours, please remove the `build/_deps/tf-*` directories and the `CMakeCache.txt` and try again!
 
 ## Documentation
-[Usage](docs/Usage.md)  
-[Debugging](docs/Debugging.md)
-[File Structure](docs/File-Structure.md)  
-[Issues & TODO](docs/Known-Issues-TODOs.md)  
+- [Usage](docs/Usage.md)  
+- [Debugging](docs/Debugging.md)
+- [File Structure](docs/File-Structure.md)  
+- [Issues & TODO](docs/Known-Issues-TODOs.md)  

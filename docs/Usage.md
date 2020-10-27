@@ -9,7 +9,7 @@
   #SET(TFLM_MODE compiler)
   SET(TFLM_MODE interpreter)
   ```
-- *Choosing your desired board (Comment in/out)
+- Choosing your desired board (Comment in/out)
   ```
   ### Configure STM32 Board here ###
   #SET(STM32_CHIP STM32F413ZHT6)
