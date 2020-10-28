@@ -8,3 +8,5 @@ The archive here provides some samples you can copy to your SD card to validate 
 ├────  *.bmp
 ```
 Make sure to format the SD card as FAT beforehand.
+
+*For MacOS Users:* Please choose the MBR partition table, not GPT!
