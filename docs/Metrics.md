@@ -54,7 +54,7 @@ The program loop was splitted in the following intervals for all 3 examples:
 
 ## CMSIS-NN Optimizations:
 
-In the following, the differences in execution time for running the model with the `cmsis-nn` kernels turned ON/OFF are compared briefly. The extend of the improvement depends on the used operations in the graph because only the following kernels are currently supported:
+In the following, the differences in execution time for running the model with the [`cmsis-nn`](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/kernels/cmsis-nn) kernels turned ON/OFF are compared briefly. The extend of the improvement depends on the used operations in the graph because only the following kernels are currently supported:
 
 - `add`
 - `conv`
