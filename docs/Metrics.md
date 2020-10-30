@@ -108,6 +108,8 @@ The results will be printed via the serial connection, f.e. like this:
 ```
 For Details, see: [`tensorflow/lite/micro/docs/memory_management.md`](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/micro/docs/memory_management.md)
 
+**Tipp:** Further information can be collected via `arm-none-eabi-size`.
+
 ### FLOPS
 #### TF1 *(Required for `micro_speech` training)*
 
