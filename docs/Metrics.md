@@ -131,6 +131,7 @@ g = load_pb('./graph.pb')
 with g.as_default():
     flops = tf.profiler.profile(g, options = tf.profiler.ProfileOptionBuilder.float_operation())
     print('FLOPS:', flops.total_float_ops)
+```
 
 #### TF2
 
