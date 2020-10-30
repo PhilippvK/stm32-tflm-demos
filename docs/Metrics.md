@@ -35,7 +35,7 @@ The FLOPS (not FLOP/s) of the model graph should give an idea on how many additi
 | 41 *FLOPS*    | 689980 *FLOPS* | 202810 *FLOPS* |
 
 
-## Runtime Measurements:
+## Runtime Measurements
 
 The time spend in different sections on the main program `loop()` is analyzed qunatitatively in the following section. The results are heavily influenced by the implementation of the network, as interrupts, serial communication and I/O-activity may be present during the measurements. Therefore and because of the reasons mentioned above, the relationship between the FLOPS and the invocation time is not linear.
 
@@ -53,7 +53,7 @@ The program loop was splitted in the following intervals for all 3 examples:
 | `INVOKE`              | F4: ~0<br>F7: ~0 | F4: 49<br>F7: 52 | F4: 34<br>F7: 13  | *ms*     |
 | `RESPOND`             | F4: ~0<br>F7: ~0 | F4: ~0<br>F7: ~0 | F4: 125<br>F7: 93 | *ms*     |
 
-## CMSIS-NN Optimizations:
+## CMSIS-NN Optimizations
 
 In the following, the differences in execution time for running the model with the [`cmsis-nn`](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/kernels/cmsis-nn) kernels turned ON/OFF are compared briefly. The extend of the improvement depends on the used operations in the graph because only the following kernels are currently supported:
 
