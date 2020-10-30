@@ -7,3 +7,9 @@
 [submodule "examples/mnist"]
 	path = examples/mnist
 	url = https://github.com/PhilippvK/stm32-tflm-mnist.git
+[submodule "examples/--path"]
+	path = examples/--path
+	url = https://github.com/munober/stm32-tflm-tinyface.git
+[submodule "examples/tinyface"]
+	path = examples/tinyface
+	url = https://github.com/munober/stm32-tflm-tinyface.git
