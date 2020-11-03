@@ -68,3 +68,4 @@ If there are new changes for patched files in the TF Source Tree, they will prob
 - [File Structure](docs/File-Structure.md)  
 - [Issues & TODO](docs/Known-Issues-TODOs.md)  
 - [Metrics](docs/Metrics.md)
+- [Compiler](docs/Compiler.md)
