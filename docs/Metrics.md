@@ -82,6 +82,10 @@ For details on ARM's neural network optimizations, see: [ARM-software/CMSIS_5](h
 
 ## How to find/calculate the Numbers?
 
+### When using the TFLite Micro Compiler
+
+When building an offline model using f.e. `make convert FILE=model.tflite` the compiler prints some relevant details on the memory usage. Look for `ROM Summary` and `RAM Summary`!
+
 ### Model Size
 
 Just use the size of the `uint8_t` array in `model_data.cc`.
