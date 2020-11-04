@@ -14,6 +14,10 @@ CMake-based. ~See our template: https://github.com/alxhoff/STM3240G-EVAL-TensorF
 - [MNIST](https://github.com/PhilippvK/stm32-tflm-mnist)
 
   based on [alxhoff/STM3240G-EVAL-TensorFlow-MNIST](https://github.com/alxhoff/STM3240G-EVAL-TensorFlow-MNIST)
+  
+- **WIP:** [Tiny Face](https://github.com/munober/stm32-tflm-tinyface)
+
+  based on [munober/tinyModels](https://github.com/munober/tinyModels) (Thesis: [munober/thesis](https://github.com/munober/thesis))
 
 ## Supported Boards
 - [STM32F413H-Discovery](https://www.st.com/content/st_com/en/products/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus/stm32-high-performance-mcus/stm32f4-series/stm32f413-423/stm32f413zh.html#documentation) (`disco_f413zh`)
