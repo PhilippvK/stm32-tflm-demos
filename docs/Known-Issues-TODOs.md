@@ -5,6 +5,7 @@ The current implementation is bare-metal. FreeRTOS would enable higher-level fun
 
 ## Issues
 - [ ] UART only works with `fprintf`to `stderr`, and not with `printf`
+- [ ] TFLite Micro Compiler Issues: See [Compiler](Compiler.md)!
 
 Example-specific Issues can be dound in the respective repository!
 
