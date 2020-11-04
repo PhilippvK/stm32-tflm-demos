@@ -12,7 +12,15 @@ https://github.com/PhilippvK/tflite_micro_compiler
 
 ## Usage
 
-TODO
+Detailed Documantation can be found in the `external/README.md` of each example. F.e. [here](https://github.com/PhilippvK/stm32-tflm-hello-world/blob/94433230c9e1ad586458ae9c107a8a39d30395e0/external/README.md)
+
+Here are the very short summary of the most important steps:
+
+1. Run `git submodule update --init --recursive`
+2. Make sure that the dependencies are loaded via running: `download_dependencies.sh`
+3. Set `SET(ENABLE_TFLM_COMPILER ON)` after `FIND_PACKAGE(TFLite REQUIRED)` to enable the feature in the `CMakeLists.txt`
+4. Convert your TFLite model via `make convert FILE=model.tflite`
+5. Try out the generate model under `Src/offline_model.cc`
 
 ## Problems
 
@@ -22,13 +30,6 @@ Until there is a fix available for the compiler, you might have to manually adap
 **Related commits:**
 - https://github.com/tensorflow/tensorflow/commit/c95c69473f32e89b8d4b75f822f459afb97d0860
 - https://github.com/tensorflow/tensorflow/commit/b13e49836a92241d653e96225552bd8df3bfd92e and similar
-
-For `TfLiteRegistration Register_CONV_2D();
-TfLiteRegistration Register_DEPTHWISE_CONV_2D();
-TfLiteRegistration Register_QUANTIZE();
-TfLiteRegistration Register_SHAPE();
-TfLiteRegistration Register_SOFTMAX();
-TfLiteRegistration Register_SVDF();`
 
 **Examples fixes in `offline_model.cc`:**
 - Remove replace the prefix `tflite::ops::micro::` with ``tflite::` for the following registration methods which have been moved to a flat namespace:
