@@ -1,10 +1,8 @@
 # Usage
 
 ## Configuring `examples/*/CMakeLists.txt`
-- Choose TF model compiler executable file and set mode
+- Choose TF model mode
   ```
-  SET(TFLM_COMPILER_EXECUTABLE "___") # Required for `make convert`
-  ...
   ### Configure TFML Mode here ###
   #SET(TFLM_MODE compiler)
   SET(TFLM_MODE interpreter)
@@ -18,7 +16,7 @@
   SET(STM_BOARD STM32F769I-Discovery)
   ```
 
-  **Warning:** When changing the Board, remove the `build/CMakeLists.txt` before running `make` again!
+  **Warning:** When changing the Board, remove the `build/CMakeCache.txt` before running `make` again!
 
 - Enable/disable custom CMSIS-NN kernels
   ```
@@ -30,6 +28,11 @@
   ### Enable/Disable Benchmarking ###
   SET(ENABLE_BENCHMARKING OFF)
   ```
+- Turn on/off Memory Reporting
+  ```
+  ### Enable/Disable Memory Reporting ###
+  SET(MEMORY_REPORTING OFF)
+  ```
 - Fix TF-Repo to a certain Branch/Commit/Tag (Before `FIND_PACKAGE(TFLite REQUIRED)`!)
   ```
   SET(TF_COMMIT ___)
@@ -37,6 +40,8 @@
   SET(TF_BRANCH ___)
   # OR
   SET(TF_TAG ___)
+  # OR
+  SET(TF_SRC ___)
   ```
 - Example-specific config
 
